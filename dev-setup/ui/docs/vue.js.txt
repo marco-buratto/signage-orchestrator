@@ -1,0 +1,925 @@
+VUE 3
+^^^^^
+
+    Vue (pronounced /vjuː/, like view) is a JavaScript framework for building user interfaces. It builds on top of
+    standard HTML, CSS, and JavaScript and provides a declarative and component-based programming model.
+
+    Here is a minimal example:
+        js:
+        import { createApp } from 'vue'
+
+        createApp({
+          data() {
+            return {
+              count: 0
+            }
+          }
+        }).mount('#app')
+
+        template:
+        <div id="app">
+          <button @click="count++">
+            Count is: {{ count }}
+          </button>
+        </div>
+
+    Reactivity: Vue automatically tracks JavaScript state changes and efficiently updates the DOM when changes happen.
+    In Vue, state is deeply reactive by default. This means you can expect changes to be detected even when you mutate nested objects or arrays.
+
+    Single-File Components
+    ^^^^^^^^^^^^^^^^^^^^^^
+
+    We author Vue components using an HTML-like file format called Single-File Component (also known as *.vue files, abbreviated as SFC).
+    A Vue SFC, as the name suggests, encapsulates the component's logic (JavaScript), template (HTML), and styles (CSS) in a single file.
+
+    With Options API, we define a component's logic using an object of options such as data, methods, and mounted.
+    Properties defined by options are exposed on this inside functions, which points to the component instance:
+
+    A Component.vue file:
+        <script>
+        export default {
+          // Properties returned from data() become reactive state
+          // and will be exposed on `this`.
+          data() {
+            return {
+              count: 0
+            }
+          },
+
+          // Methods are functions that mutate state and trigger updates.
+          // They can be bound as event handlers in templates.
+          methods: {
+            increment() {
+              this.count++
+            }
+          },
+
+          // Lifecycle hooks are called at different stages
+          // of a component's lifecycle.
+          // This function will be called when the component is mounted.
+          mounted() {
+            console.log(`The initial count is ${this.count}.`)
+          }
+        }
+        </script>
+
+        <template>
+          <button @click="increment">Count is: {{ count }}</button>
+        </template>
+
+        <style scoped>
+        button {
+          font-weight: bold;
+        }
+        </style>
+
+
+
+Creating a Vue Application
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    npm create vue@latest # requires nodejs 16+.
+    cd <your-project-name>
+
+    # Install dependencies and start the dev server.
+    npm install
+    npm run dev
+
+    When you are ready to ship your app to production, run the following: npm run build
+
+    Every Vue application starts by creating a new application instance with the createApp function:
+
+    js:
+    import { createApp } from 'vue'
+    // import the root component App from a single-file component.
+    import App from './App.vue'
+
+    const app = createApp(App)
+
+    An application instance won't render anything until its .mount() method is called.
+    It expects a "container" argument, which can either be an actual DOM element or a selector string:
+
+    html:
+    <div id="app"></div>
+
+    js:
+    app.mount('#app')
+
+    The content of the app's root component will be rendered inside the container element.
+    The container element itself is not considered part of the app.
+
+    The .mount() method should always be called after all app configurations and asset registrations are done.
+
+    The recommended IDE setup is Visual Studio Code + Volar extension.
+
+    App Configurations
+    ^^^^^^^^^^^^^^^^^^
+
+    The application instance exposes a .config object that allows us to configure a few app-level options,
+    for example, defining an app-level error handler that captures errors from all descendant components:
+
+    app.config.errorHandler = (err) => {
+      /* handle error */
+    }
+
+    The application instance also provides a few methods for registering app-scoped assets. For example, registering a component:
+
+    app.component('TodoDeleteButton', TodoDeleteButton)
+
+    This makes the TodoDeleteButton available for use anywhere in our app.
+
+
+
+Template Syntax
+^^^^^^^^^^^^^^^
+
+    The most basic form of data binding is text interpolation using the "Mustache" syntax (double curly braces):
+        <span>Message: {{ msg }}</span>
+
+    The mustache tag will be replaced with the value of the msg property from the corresponding component instance.
+    It will also be updated whenever the msg property changes.
+    The double mustaches interpret the data as plain text, not HTML.
+
+    In order to output real HTML, you will need to use the v-html directive:
+        <p>Using v-html directive: <span v-html="rawHtml"></span></p>
+        Here, we're basically saying "keep this element's inner HTML up-to-date with the rawHtml property on the current active instance."
+
+    v-bind or :
+    ^^^^^^^^^^^
+
+    The v-bind directive instructs Vue to keep the element's id attribute in sync with the component's dynamicId property.
+    If the bound value is null or undefined, then the attribute will be removed from the rendered element.
+        <div v-bind:id="dynamicId"></div> <!-- dynamicId is a variable -->
+
+    Because v-bind is so commonly used, it has a dedicated shorthand syntax:
+        <div :id="dynamicId"></div>
+        <div :id="`list-${id}`"></div>
+
+    It is possible to call a component-exposed method inside a binding expression:
+        <time :title="toTitleDate(date)" :datetime="date">
+          {{ formatDate(date) }}
+        </time>
+
+    <button :disabled="isButtonDisabled">Button</button>
+
+    If you have a JavaScript object representing multiple attributes that looks like this:
+        data() {
+          return {
+            objectOfAttrs: {
+              id: 'container',
+              class: 'wrapper'
+            }
+          }
+        }
+
+    You can bind them to a single element by using v-bind without an argument:
+        <div v-bind="objectOfAttrs"></div>
+
+    v-if, v-else, v-else-if
+    ^^^^^^^^^^^^^^^^^^^^^^^
+
+    The directive v-if is used to conditionally render a block.
+    The block will only be rendered if the directive's expression returns a truthy value.
+        <p v-if="seen">Now you see me</p>
+
+    v-elses:
+        <div v-if="type === 'A'">
+          A
+        </div>
+        <div v-else-if="type === 'B'">
+          B
+        </div>
+        <div v-else>
+          Not A/B
+        </div>
+
+    v-if on <template>
+    Because v-if is a directive, it has to be attached to a single element.
+    But what if we want to toggle more than one element? In this case we can use v-if on a <template> element, which serves as an invisible wrapper.
+    The final rendered result will not include the <template> element:
+        <template v-if="ok">
+          <h1>Title</h1>
+          <p>Paragraph 1</p>
+          <p>Paragraph 2</p>
+        </template>
+
+    v-else and v-else-if can also be used on <template>.
+
+    v-show
+    ^^^^^^
+
+    Another option for conditionally displaying an element is the v-show directive. The usage is largely the same:
+        <h1 v-show="ok">Hello!</h1>
+
+    The difference is that an element with v-show will always be rendered and remain in the DOM;
+    v-show only toggles the display CSS property of the element.
+
+    v-for
+    ^^^^^
+
+    We can use the v-for directive to render a list of items based on an array.
+        1.
+            js:
+            data() {
+              return {
+                items: [{ message: 'Foo' }, { message: 'Bar' }]
+              }
+            }
+
+            template:
+            <li v-for="item in items">
+              {{ item.message }}
+            </li>
+
+            <li v-for="(item, index) in items">
+              {{ index }} - {{ item.message }}
+            </li>
+
+       2.
+           js:
+           data() {
+              return {
+                myObject: {
+                  title: 'How to do lists in Vue',
+                  author: 'Jane Doe',
+                  publishedAt: '2016-04-10'
+                }
+              }
+            }
+
+           template:
+           <li v-for="(value, key) in myObject">
+              {{ key }}: {{ value }}
+           </li>
+
+    v-on
+    ^^^^
+
+    The v-on directive listens to DOM events:
+        <a v-on:click="doSomething"> ... </a>
+
+        <!-- shorthand -->
+        <a @click="doSomething"> ... </a>
+
+    See more in the related Events sections below.
+
+    Square brackets
+    ^^^^^^^^^^^^^^^
+
+    It is also possible to use a JavaScript expression in a directive argument by wrapping it with square brackets:
+        <a @[eventName]="doSomething">
+    In this example, when eventName's value is "focus", v-on:[eventName] will be equivalent to v-on:focus.
+
+
+
+Reactivity Fundamentals
+^^^^^^^^^^^^^^^^^^^^^^^
+
+    With the Options API, we use the data option to declare reactive state of a component.
+
+    export default {
+      data() {
+        return {
+          count: 1
+        }
+      },
+
+      methods: {
+        increment() {
+          this.count++
+        }
+      },
+
+      mounted() {
+        // `this` refers to the component instance.
+        console.log(this.count) // => 1
+
+        // data can be mutated as well
+        this.count = 2
+      }
+    }
+
+    It is possible to add a new property directly to this without including it in data.
+    However, properties added this way will not be able to trigger reactive updates.
+
+    Vue uses a $ prefix when exposing its own built-in APIs via the component instance.
+
+    To add methods to a component instance we use the methods option. This should be an object containing the desired methods.
+    Vue automatically binds the this value for methods so that it always refers to the component instance.
+    This ensures that a method retains the correct this value if it's used as an event listener or callback.
+    You should avoid using arrow functions when defining methods, as that prevents Vue from binding the appropriate this value.
+
+
+
+Class and Style Bindings
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+    A common need for data binding is manipulating an element's class list and inline styles.
+    Since class and style are both attributes, we can use v-bind to assign them a string value dynamically, much like with other attributes.
+    However, trying to generate those values using string concatenation can be annoying and error-prone.
+    For this reason, Vue provides special enhancements when v-bind is used with class and style.
+
+    We can pass an object to :class (short for v-bind:class) to dynamically toggle classes:
+
+        <div :class="{ active: isActive }"></div>
+
+    The above syntax means the presence of the active class will be determined by the truthiness of the data property isActive.
+
+    Example 1.
+    If hasError becomes true, the class list will become "static active text-danger":
+        <div
+          class="static"
+          :class="{ active: isActive, 'text-danger': hasError }"
+        ></div>
+
+    Example 2.
+    If we have a component named MyComponent with the following template:
+        <!-- child component template -->
+        <p class="foo bar $attrs.class">Hi!</p>
+
+    And:
+        <MyComponent :class="{ active: isActive }" />
+
+    When isActive is truthy, the rendered HTML will be:
+        <p class="foo bar active">Hi!</p>
+
+
+
+Event Handling
+^^^^^^^^^^^^^^
+
+    We can use the v-on directive, which we typically shorten to the @ symbol, to listen to DOM events and run some JavaScript when they're triggered.
+    The usage would be v-on:click="handler" or with the shortcut, @click="handler".
+
+        js:
+        data() {
+          return {
+            name: 'Vue.js'
+          }
+        },
+        methods: {
+          greet(event) {
+            // `this` inside methods points to the current active instance
+            alert(`Hello ${this.name}!`)
+            // `event` is the native DOM event
+            if (event) {
+              alert(event.target.tagName)
+            }
+          }
+        }
+
+        template:
+        <button @click="greet">Greet</button>
+
+        Others:
+        <input @keyup.enter="submit" />
+        <input @keyup.alt.enter="clear" />
+
+    Event modifiers
+    ^^^^^^^^^^^^^^^
+
+    It is a very common need to call event.preventDefault() or event.stopPropagation() inside event handlers.
+    Although we can do this easily inside methods, it would be better if the methods can be purely about data logic rather than having to deal with DOM event details.
+
+    To address this problem, Vue provides event modifiers for v-on.
+    Recall that modifiers are directive postfixes denoted by a dot.
+    <!-- the click event's propagation will be stopped -->
+    <a @click.stop="doThis"></a>
+
+    <!-- the submit event will no longer reload the page -->
+    <form @submit.prevent="onSubmit"></form>
+
+    <!-- modifiers can be chained -->
+    <a @click.stop.prevent="doThat"></a>
+
+    <!-- just the modifier -->
+    <form @submit.prevent></form>
+
+    <!-- only trigger handler if event.target is the element itself -->
+    <!-- i.e. not from a child element -->
+    <div @click.self="doThat">...</div>
+
+    <!-- use capture mode when adding the event listener -->
+    <!-- i.e. an event targeting an inner element is handled here before being handled by that element -->
+    <div @click.capture="doThis">...</div>
+
+    <!-- the click event will be triggered at most once -->
+    <a @click.once="doThis"></a>
+
+    <!-- the scroll event's default behavior (scrolling) will happen -->
+    <!-- immediately, instead of waiting for `onScroll` to complete  -->
+    <!-- in case it contains `event.preventDefault()`                -->
+    <div @scroll.passive="onScroll">...</div>
+
+
+
+Form Input Bindings
+^^^^^^^^^^^^^^^^^^^
+
+    When dealing with forms on the frontend, we often need to sync the state of form input elements with corresponding state in JavaScript.
+    It can be cumbersome to manually wire up value bindings and change event listeners:
+
+    <input
+      :value="searchText"
+      @input="searchText = $event.target.value"
+    />
+
+    The v-model directive helps us simplify the above to:
+
+    <input v-model="searchText">
+    text is a js variable.
+
+    In addition, v-model can be used on inputs of different types, <textarea>, and <select> elements.
+
+    v-model will ignore the initial value, checked or selected attributes found on any form elements.
+    It will always treat the current bound JavaScript state as the source of truth.
+
+    Examples.
+    <p>Message is: {{ message }}</p>
+    <input v-model="message" placeholder="edit me" />
+
+    <input type="checkbox" id="checkbox" v-model="checked" />
+    <label for="checkbox">{{ checked }}</label>
+
+    <div>Picked: {{ picked }}</div>
+    <input type="radio" id="one" value="One" v-model="picked" />
+    <label for="one">One</label>
+    <input type="radio" id="two" value="Two" v-model="picked" />
+    <label for="two">Two</label>
+
+    <div>Selected: {{ selected }}</div>
+    <select v-model="selected">
+      <option disabled value="">Please select one</option>
+      <option>A</option>
+      <option>B</option>
+      <option>C</option>
+    </select>
+
+    <select v-model="selected">
+      <option v-for="option in options" :key="option.value" :value="option.value">
+        {{ option.text }}
+      </option>
+    </select>
+
+
+
+Lifecycle Hooks
+^^^^^^^^^^^^^^^
+
+    Each Vue component instance goes through a series of initialization steps when it's created - for example, it needs to set up data observation,
+    compile the template, mount the instance to the DOM, and update the DOM when data changes.
+    Along the way, it also runs functions called lifecycle hooks, giving users the opportunity to add their own code at specific stages.
+
+    For example, the mounted hook can be used to run code after the component has finished the initial rendering and created the DOM nodes:
+        export default {
+          mounted() {
+            console.log(`the component is now mounted.`)
+          }
+        }
+
+    There are also other hooks which will be called at different stages of the instance's lifecycle, with the most commonly used being mounted, updated, and unmounted.
+
+    All lifecycle hooks are called with their this context pointing to the current active instance invoking it.
+    Note this means you should avoid using arrow functions when declaring lifecycle hooks, as you won't be able to access the component instance via this if you do so.
+
+    https://vuejs.org/api/options-lifecycle.html#serverprefetch
+
+
+
+Watchers
+^^^^^^^^
+
+    With the Options API, we can use the watch option to trigger a function whenever a reactive property changes:
+
+    export default {
+      data() {
+        return {
+          question: '',
+          answer: 'Questions usually contain a question mark. ;-)'
+        }
+      },
+      watch: {
+        // whenever question changes, this function will run
+        question(newQuestion, oldQuestion) {
+          if (newQuestion.includes('?')) {
+            this.getAnswer()
+          }
+        }
+      },
+      methods: {
+        async getAnswer() {
+          this.answer = 'Thinking...'
+          try {
+            const res = await fetch('https://yesno.wtf/api')
+            this.answer = (await res.json()).answer
+          } catch (error) {
+            this.answer = 'Error! Could not reach the API. ' + error
+          }
+        }
+      }
+    }
+
+    watch is shallow by default: the callback will only trigger when the watched property has been assigned a new value - it won't trigger on nested property changes.
+    If you want the callback to fire on all nested mutations, you need to use a deep watcher:
+
+    export default {
+      watch: {
+        someObject: {
+          handler(newValue, oldValue) {
+            // Note: `newValue` will be equal to `oldValue` here
+            // on nested mutations as long as the object itself
+            // hasn't been replaced.
+          },
+          deep: true
+        }
+      }
+    }
+
+    immediate
+    ^^^^^^^^^
+
+    In some cases we may want to fetch some initial data, and then re-fetch the data whenever relevant state changes.
+    The initial execution of the handler function will happen just before the created hook.
+
+    export default {
+      // ...
+      watch: {
+        question: {
+          handler(newQuestion) {
+            // this will be run immediately on component creation.
+          },
+          // force eager callback execution
+          immediate: true
+        }
+      }
+      // ...
+    }
+
+    flush
+    ^^^^^
+
+    By default, user-created watcher callbacks are called before Vue component updates.
+    This means if you attempt to access the DOM inside a watcher callback, the DOM will be in the state before Vue has applied any updates.
+    If you want to access the DOM in a watcher callback after Vue has updated it, you need to specify the flush: 'post' option.
+
+    this.$watch()
+    ^^^^^^^^^^^^^
+
+    It's also possible to imperatively create watchers using the $watch() instance method:
+
+    export default {
+      created() {
+        this.$watch('question', (newQuestion) => {
+          // ...
+        })
+      }
+    }
+
+    In the rare case where you need to stop a watcher before the owner component unmounts, the $watch() API returns a function for that:
+
+    const unwatch = this.$watch('foo', callback)
+
+    // ...when the watcher is no longer needed:
+    unwatch()
+
+
+
+Refs
+^^^^
+
+    ref allows us to obtain a direct reference to a specific DOM element or child component instance after it's mounted.
+
+    <script>
+    export default {
+      mounted() {
+        this.$refs.input.focus()
+      }
+    }
+    </script>
+
+    <template>
+      <input ref="input" />
+    </template>
+
+
+    On lists:
+    <script>
+    export default {
+      data() {
+        return {
+          list: [
+            /* ... */
+          ]
+        }
+      },
+      mounted() {
+        console.log(this.$refs.items)
+      }
+    }
+    </script>
+
+    <template>
+      <ul>
+        <li v-for="item in list" ref="items">
+          {{ item }}
+        </li>
+      </ul>
+    </template>
+
+
+
+COMPONENTS
+^^^^^^^^^^
+
+Defining a Component
+^^^^^^^^^^^^^^^^^^^^
+
+    We typically define each Vue component in a dedicated file using the .vue extension - known as a Single-File Component (SFC for short):
+
+    ButtonCounter.vue:
+        <script>
+        export default {
+          data() {
+            return {
+              count: 0
+            }
+          }
+        }
+        </script>
+
+        <template>
+          <button @click="count++">You clicked me {{ count }} times.</button>
+        </template>
+
+    To use a child component, we need to import it in the parent component.
+    Assuming we placed our counter component inside a file called ButtonCounter.vue:
+        <script>
+        import ButtonCounter from './ButtonCounter.vue'
+
+        # To expose the imported component to our template, we need to register it with the components option.
+        # The component will then be available as a tag using the key it is registered under.
+        export default {
+          components: {
+            ButtonCounter
+          }
+        }
+        </script>
+
+        <template>
+          <h1>Here is a child component!</h1>
+          <ButtonCounter />
+        </template>
+
+    Global Registration
+    ^^^^^^^^^^^^^^^^^^^
+
+    We can make components available globally in the current Vue application using the app.component() method:
+
+        import { createApp } from 'vue'
+
+        const app = createApp({})
+        app.component(
+          // the registered name
+          'MyComponent',
+          // the implementation
+          {
+            /* ... */
+          }
+        )
+
+    If using SFCs, you will be registering the imported .vue files:
+
+        import MyComponent from './App.vue'
+
+        app.component('MyComponent', MyComponent)
+
+
+
+Props
+^^^^^
+
+    Vue components require explicit props declaration.
+    Props are declared using the props option:
+
+        export default {
+          props: ['myTitle'],
+
+          // or:
+          //props: {
+          //myTitle: String,
+          //likes: Object
+          //},
+
+          created() {
+            // props are exposed on `this`
+            console.log(this.myTitle)
+          }
+        }
+
+    Props are READONLY.
+
+    Once a prop is registered, you can pass data to it as a custom attribute, like this:
+
+    <BlogPost my-title="My journey with Vue" /> <!-- note the kebab case -->
+    <BlogPost my-title="Blogging with Vue" />
+    <BlogPost my-title="Why Vue is so fun" />
+
+    <BlogPost :my-title="post.title" />
+
+    Notes:
+	    Binding Multiple Properties Using an Object
+	    const post = {
+	      id: 1,
+	      title: 'My Journey with Vue'
+	    }
+	    The following template: <BlogPost v-bind="post" />
+	    Will be equivalent to: <BlogPost :id="post.id" :title="post.title" />
+
+    All props form a one-way-down binding between the child property and the parent one: when the parent property updates,
+    it will flow down to the child, but not the other way around.
+    In addition, every time the parent component is updated, all props in the child component will be refreshed with the latest value.
+
+    When objects and arrays are passed as props, while the child component cannot mutate the prop binding, it will be able to mutate the object or array's nested properties.
+    The main drawback of such mutations is that it allows the child component to affect parent state in a way that isn't obvious to the parent component,
+    potentially making it more difficult to reason about the data flow in the future.
+
+    Some features may require communicating back up to the parent --> events.
+
+
+
+Events from child components
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    Some features may require communicating back up to the parent.
+    A component can emit custom events directly in template expressions (e.g. in a v-on handler) using the built-in $emit method:
+
+    <button @click="$emit('increaseBy', 1)">
+      Increase
+    </button>
+
+    The $emit() method is also available on the component instance as this.$emit('someEvent').
+
+    The parent can then listen to it using v-on:
+
+    methods: {
+      increaseCount(n) {
+        ...
+      }
+    }
+    <MyButton @increase-by="increaseCount" />
+
+    Declaring emitted events (optional):
+        A component can explicitly decl are the events it will emit using the emits option:
+
+        export default {
+          emits: ['inFocus', 'submit']
+        }
+
+        The emits option also supports an object syntax, which allows us to perform runtime validation of the payload of the emitted events:
+
+        export default {
+          emits: {
+            submit(payload) {
+              // return `true` or `false` to indicate
+              // validation pass / fail
+            }
+          }
+        }
+
+    Unlike native DOM events, component emitted events do not bubble.
+    You can only listen to the events emitted by a direct child component.
+    If there is a need to communicate between sibling or deeply nested components, use an external event bus or
+    a global state management solution.
+
+
+
+Dynamic Components
+^^^^^^^^^^^^^^^^^^
+
+    Sometimes, it's useful to dynamically switch between components, like in a tabbed interface:
+        <template>
+          <div class="demo">
+            <button
+               v-for="tab in tabs"
+               :key="tab"
+               :class="['tab-button', { active: currentTab === tab }]"
+               @click="currentTab = tab"
+             >
+              {{ tab }}
+            </button>
+	          <component :is="currentTab" class="tab"></component>
+          </div>
+        </template>
+
+
+
+v-for with a component
+^^^^^^^^^^^^^^^^^^^^^^
+
+    <MyComponent v-for="item in items" :key="item.id" />
+
+    However, this won't automatically pass any data to the component, because components have isolated scopes of their own.
+    In order to pass the iterated data into the component, we should also use props:
+
+        <MyComponent
+          v-for="(item, index) in items"
+          :item="item"
+          :index="index"
+          :key="item.id"
+        />
+
+
+
+Provide / Inject
+^^^^^^^^^^^^^^^^
+
+    Usually, when we need to pass data from the parent to a child component, we use props.
+    However, imagine the case where we have a large component tree, and a deeply nested component needs something from a distant ancestor component.
+    With only props, we would have to pass the same prop across the entire parent chain.
+
+    We can solve props drilling with provide and inject.
+    A parent component can serve as a dependency provider for all its descendants.
+    Any component in the descendant tree, regardless of how deep it is, can inject dependencies provided by components up in its parent chain.
+
+    Provide
+    ^^^^^^^
+
+    To provide data to a component's descendants, use the provide option:
+        export default {
+          provide: {
+            message: 'hello!'
+          }
+        }
+
+    If we need to provide per-instance state, for example data declared via the data(), then provide must use a function value:
+        export default {
+          data() {
+            return {
+              message: 'hello!'
+            }
+          },
+          provide() {
+            // use function syntax so that we can access `this`
+            return {
+              message: this.message
+            }
+          }
+        }
+
+    In addition to providing data in a component, we can also provide at the app level:
+        import { createApp } from 'vue'
+
+        const app = createApp({})
+
+        app.provide(/* key */ 'message', /* value */ 'hello!')
+
+    Inject
+    ^^^^^^
+
+    To inject data provided by an ancestor component, use the inject option:
+        export default {
+          inject: ['message'],
+          created() {
+            console.log(this.message) // injected value
+          }
+        }
+
+    Injections are resolved before the component's own state, so you can access injected properties in data():
+        export default {
+          inject: ['message'],
+          data() {
+            return {
+              // initial data based on injected value
+              fullMessage: this.message
+            }
+          }
+        }
+
+    Working with Reactivity
+    ^^^^^^^^^^^^^^^^^^^^^^^
+
+    In order to make injections reactively linked to the provider, we need to provide a computed property using the computed() function:
+        import { computed } from 'vue'
+
+        export default {
+          data() {
+            return {
+              message: 'hello!'
+            }
+          },
+          provide() {
+            return {
+              // explicitly provide a computed property
+              message: computed(() => this.message)
+            }
+          }
+        }
+
+    The above usage requires setting app.config.unwrapInjectedRef = true to make injections automatically unwrap computed refs.
+    This will become the default behavior in Vue 3.3 and this config is introduced temporarily to avoid breakage. It will no longer be required after 3.3.
+
+
+
+
+
+

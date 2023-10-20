@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Orchestrator service every minute
+Requires=orchestrator.service
+
+[Timer]
+Unit=orchestrator.service
+OnCalendar=*-*-* *:*:00
+AccuracySec=1us
+
+[Install]
+WantedBy=timers.target

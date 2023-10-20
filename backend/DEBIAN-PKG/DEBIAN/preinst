@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+printf "\n* Setting up timezone...\n"
+dpkg-reconfigure tzdata
+
+exit 0

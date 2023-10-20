@@ -1,0 +1,8 @@
+Package: signage-orchestrator-ui
+Version: RELEASE
+Architecture: all
+Depends: apache2 (>= 2.4.30)
+Maintainer: ing.marcoburatto@gmail.com
+Homepage: https://www.binaryemotions.com
+Description: Signage Orchestrator, user interface
+

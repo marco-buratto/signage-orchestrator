@@ -1,0 +1,4 @@
+[mysqld]
+thread_stack = 192K
+thread_cache_size = 1024
+max_connections = 1024

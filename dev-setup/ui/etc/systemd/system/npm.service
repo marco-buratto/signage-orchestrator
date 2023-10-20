@@ -1,0 +1,23 @@
+[Unit]
+Description=npm service
+#Wants=network-online.target
+After=systemd-networkd-wait-online.service
+Wants=systemd-networkd-wait-online.service
+
+[Service]
+Type=forking
+RemainAfterExit=no
+Restart=always
+RestartSec=10
+KillMode=process
+
+WorkingDirectory=/var/www/ui
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=npm
+TimeoutStartSec=20min
+ExecStart=/usr/bin/npm.sh start
+ExecStop=/usr/bin/npm.sh stop
+
+[Install]
+WantedBy=multi-user.target

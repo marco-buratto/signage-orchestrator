@@ -1,0 +1,4 @@
+https://docs.dhtmlx.com/scheduler/
+
+https://github.com/DHTMLX/scheduler
+https://dhtmlx.com/blog/use-dhtmlx-scheduler-vue-js-framework-demo/

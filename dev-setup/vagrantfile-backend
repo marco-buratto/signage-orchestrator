@@ -1,0 +1,45 @@
+  ############################################################################################
+  # BACKEND
+  ############################################################################################
+
+  config.vm.define :backend do |backend|
+    backend.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "1024"
+      vb.cpus = 2
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"] # https://serverfault.com/questions/453185/vagrant-virtualbox-dns-10-0-2-3-not-working
+    end
+
+    backend.vm.provider "libvirt" do |libvrt|
+      libvrt.memory = "1024"
+      libvrt.cpus = 2
+    end
+
+    # OS.
+    backend.vm.box = "debian/bookworm64"
+
+    # Network.
+    backend.vm.network :private_network, ip: "10.0.120.100"
+    backend.vm.hostname = "backend"
+
+    # Synced folders.
+    if OS.linux?
+      backend.vm.synced_folder "../backend", "/var/www/backend", type: "nfs", nfs_version: 4
+    end
+    if OS.mac?
+      backend.vm.synced_folder "../backend", "/var/www/backend", type: "nfs", nfs_udp: false
+    end
+    if OS.windows?
+      backend.vm.synced_folder "../backend", "/var/www/backend", type: "smb"
+    end
+
+    # Provision.
+    backend.vm.provision "shell" do |s|
+      s.path = "backend/bootstrap.sh"
+      s.args = ["--action", "install"]
+    end
+    backend.vm.provision "db", type: "shell" do |s|
+      s.path = "backend/db-bootstrap.sh"
+      s.args = ["--action", "run"]
+    end
+  end

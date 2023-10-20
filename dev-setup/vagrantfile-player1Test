@@ -1,0 +1,30 @@
+  ############################################################################################
+  # EMPTY DEB12 FOR TESTS
+  ############################################################################################
+
+  config.vm.define :player1Test do |player1Test|
+    player1Test.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "512"
+      vb.cpus = 2
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"] # https://serverfault.com/questions/453185/vagrant-virtualbox-dns-10-0-2-3-not-working
+    end
+
+    player1Test.vm.provider "libvirt" do |libvrt|
+      libvrt.memory = "512"
+      libvrt.cpus = 2
+    end
+
+    # OS.
+    player1Test.vm.box = "debian/bookworm64"
+
+    # Network.
+    player1Test.vm.network :private_network, ip: "10.0.120.210"
+    player1Test.vm.hostname = "player1Test"
+
+    # Provision.
+    player1Test.vm.provision "shell" do |s|
+      s.path = "test/bootstrap.sh"
+      s.args = ["--action", "install"]
+    end
+  end

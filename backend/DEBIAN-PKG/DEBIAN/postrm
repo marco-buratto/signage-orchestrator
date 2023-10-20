@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ "$1" == "purge" ]; then
+    printf "\n* Database cleanup...\n"
+    if mysql -e "exit"; then
+        mysql api -e "DROP USER IF EXISTS 'api'@'localhost';"
+        mysql api -e "DROP DATABASE IF EXISTS api;"
+    else
+        echo "Failed to access MariaDB RDBMS, auth_socket plugin must be enabled for the database root user."
+        exit 1
+    fi
+
+    printf "\n* Final cleanup...\n"
+    # Forcing files removal, in any case.
+    rm -fr /var/www/backend || true
+fi
+
+exit 0

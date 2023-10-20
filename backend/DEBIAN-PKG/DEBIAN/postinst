@@ -1,0 +1,120 @@
+#!/bin/bash
+
+set -e
+
+. /usr/share/debconf/confmodule # do not move this line.
+
+if [ "$1" == "configure" ]; then
+    printf "\n* Post-installing...\n"
+
+    # User input (debconf).
+    db_version 2.0
+    configBasic=$(cat /etc/apache2/basic.auth | awk -F: '{print $2}')
+    if [ -z $configBasic ]; then
+        db_beginblock
+            db_input critical signage-orchestrator-backend/admin-password
+        db_endblock
+    fi
+
+    db_go || true
+
+    printf "\n* Setting up Python3 as default Python interpreter...\n"
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
+    update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 # best practice for simply creating a symlink.
+
+    printf "\n* Setting up Apache...\n"
+    a2enmod wsgi
+    a2enmod proxy proxy_http
+    a2enmod rewrite
+    a2enmod ssl
+
+    if ! grep -q '^Listen 8000$' /etc/apache2/ports.conf; then
+        echo "Listen 8000" >> /etc/apache2/ports.conf
+    fi
+
+    a2ensite 000-revptls
+    a2ensite 000-revp
+    a2ensite 001-api
+    a2query -s 000-default && a2dissite 000-default # disable default Apache site, only if enabled.
+
+    # Configure www-data user.
+    usermod --shell /bin/bash www-data # enabling shell capabilities for the httpd user.
+
+    [ ! -d /var/www/.ssh ] && mkdir /var/www/.ssh # used for players' known keys.
+    touch /var/www/.ssh/known_hosts
+    echo "y" | ssh-keygen -t ecdsa -N '' -q -f /var/www/.ssh/id_ecdsa > /dev/null # generating www-data SSH keypair.
+    chown -R www-data:www-data /var/www/.ssh/
+
+    # Apache basic auth.
+    db_get signage-orchestrator-backend/admin-password
+    if [ -n "$RET" ]; then
+        echo "$(echo $RET | sed 's/\$/\\$/g')" | htpasswd -i /etc/apache2/basic.auth admin # apache basic auth (some escapes).
+
+        echo "$(echo $RET | sed 's/\$/\\$/g')" > /etc/orchestrator.password # used for cron service.
+        chmod 400 /etc/orchestrator.password
+    fi
+
+    printf "\n* Setting code folder permissions...\n"
+    chown -R www-data:www-data /var/www/backend
+
+    printf "\n* Configuring Django...\n"
+    djangoSecretKey=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 50 | head -n 1)
+    sed -i "s|^SECRET_KEY =.*|SECRET_KEY = \"$djangoSecretKey\"|g" /var/www/backend/api/settings.py
+
+    printf "\n* Database configuration...\n"
+    if mysql -e "exit"; then
+        # User api.
+        databaseUserPassword=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+
+        if [ "$(mysql --vertical -e "SELECT User FROM mysql.user WHERE User = 'api';" | tail -1 | awk '{print $2}')" == "" ]; then
+            # User api not present: create.
+            echo "Creating api user..."
+            mysql -e "CREATE USER 'api'@'localhost' IDENTIFIED BY '$databaseUserPassword';"
+            mysql -e "GRANT USAGE ON *.* TO 'api'@'localhost' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;"
+            mysql -e 'GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, CREATE TEMPORARY TABLES, CREATE VIEW, SHOW VIEW, EXECUTE ON `api`.* TO `api`@`localhost`;'
+        else
+            # Update user's password.
+            echo "Updating api user's password..."
+            mysql -e "SET PASSWORD FOR 'api'@'localhost' = PASSWORD('$databaseUserPassword');"
+        fi
+
+        # Change database password into Django config file, too.
+        echo "Configuring Django..."
+        sed -i "s/^.*DATABASE_USER$/        'USER': 'api', #DATABASE_USER/g" /var/www/backend/api/settings.py
+        sed -i "s/^.*DATABASE_PASSWORD$/        'PASSWORD': '$databaseUserPassword', #DATABASE_PASSWORD/g" /var/www/backend/api/settings.py
+
+        # Database api.
+        if [ "$(mysql --vertical -e "SHOW DATABASES LIKE 'api';" | tail -1 | awk -F': ' '{print $2}')" == "" ]; then
+            # Database not present: create.
+            echo "Creating database api and restoring SQL dump..."
+            mysql -e 'CREATE DATABASE api DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;' # create database.
+            mysql api -e "source /var/www/backend/backend/sql/backend.schema.sql" # restore database schema.
+            mysql api -e "source /var/www/backend/backend/sql/backend.data.sql" # restore database data.
+        fi
+
+        # Database update via diff.sql (migrations).
+        echo "Applying migrations..."
+        bash /var/www/backend/backend/sql/migrate.sh
+    else
+        echo "Failed to access MariaDB RDBMS, auth_socket plugin must be enabled for the database root user. Quitting."
+        exit 1
+    fi
+
+    printf "\n* Re/starting services...\n"
+    systemctl daemon-reload
+
+    systemctl restart apache2
+    systemctl restart mariadb
+
+    systemctl enable orchestrator.service
+    systemctl restart orchestrator.service
+    systemctl enable orchestrator.timer
+    systemctl restart orchestrator.timer
+
+    printf "\n* Cleanup...\n"
+    db_purge # cleanup debconf - used only for triggering user input, the standard way, here.
+
+    printf "\n* Post-install accomplished.\n"
+fi
+
+exit 0

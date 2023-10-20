@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+if [ "$1" == "configure" ]; then
+    printf "\n* Post-installing...\n"
+
+    printf "\n* Setting code folder permissions...\n"
+    chown -R www-data:www-data /var/www/ui
+
+    printf "\n* Post-install accomplished.\n"
+fi
+
+exit 0

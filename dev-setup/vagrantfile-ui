@@ -1,0 +1,70 @@
+  ############################################################################################
+  # UI
+  ############################################################################################
+
+  config.vm.define :ui do |ui|
+    ui.vm.provider "virtualbox" do |vb|
+      vb.gui = false
+      vb.memory = "2048"
+      vb.cpus = 2
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    end
+
+    ui.vm.provider "libvirt" do |libvrt|
+      libvrt.memory = "2048"
+      libvrt.cpus = 2
+    end
+
+    # OS.
+    ui.vm.box =  "debian/bullseye64"
+
+    # Network.
+    ui.vm.network :private_network, ip: "10.0.120.10"
+    ui.vm.hostname = "ui"
+
+    # Synced folders.
+    if OS.linux?
+      ui.vm.synced_folder "../ui", "/var/www/ui", type: "nfs", nfs_udp: false, nfs_version: 3, fsnotify: true, :mount_options => ["nolock" ] # use these options for fsnotify to properly work (nfs_version v3). Also, nolock on NFS v3. https://github.com/dotnet/runtime/issues/48757
+    end
+    if OS.mac?
+      backend.vm.synced_folder "../ui", "/var/www/ui", nfs_udp: false, nfs_version: 3, fsnotify: true, :mount_options => ["nolock" ]
+    end
+    if OS.windows?
+      backend.vm.synced_folder "../ui", "/var/www/ui", type: "smb"
+      # @todo: fsnotify?
+    end
+
+    # Provision.
+    ui.vm.provision "shell" do |s|
+      s.path = "ui/bootstrap.sh"
+      s.args = ["--action", "install"]
+    end
+    ui.vm.provision "npm", type: "shell" do |s|
+      s.path = "ui/npm-bootstrap.sh"
+      s.args = ["--action", "run"]
+    end
+
+    # Triggers.
+    if OS.linux?
+      ui.trigger.before :up do |trigger|
+        trigger.name = "fsnotify: increase host max_user_watches limit"
+        trigger.run = { inline: "bash ./set-inotify.sh ui start" }
+      end
+      ui.trigger.after :up do |trigger|
+        trigger.name = "vagrant-fsnotify-ui"
+        trigger.run = { inline: "bash -c '(vagrant fsnotify ui) > /dev/null 2>&1 &' " }
+      end
+      ui.trigger.after :halt, :destroy do |trigger|
+        trigger.name = "fsnotify: restore host max_user_watches limit"
+        trigger.run = { inline: "bash ./set-inotify.sh ui stop" }
+      end
+      ui.trigger.after :halt, :destroy do |trigger|
+        trigger.name = "kill vagrant-fsnotify-ui"
+        trigger.run = { inline: "pkill -f '/usr/bin/vagrant fsnotify ui'" }
+        trigger.exit_codes = [ 0, 1 ]
+      end
+    end
+
+    ui.vm.post_up_message = "#######################################################################\nDevelopment server is accepting connections at http://10.0.120.10:5173/\n#######################################################################"
+  end
+

@@ -1,0 +1,8 @@
+Package: signage-orchestrator-backend
+Version: RELEASE
+Architecture: all
+Depends: apache2 (>= 2.4.30), python3 (>= 3.11), python3-pip (>= 23), python3-venv (>= 3.11), libapache2-mod-wsgi-py3 (>= 4.6.0), mariadb-server (>= 1:10.3), redis-server (>= 5:5.0), openssh-client, jq
+Maintainer: ing.marcoburatto@gmail.com
+Homepage: https://www.binaryemotions.com
+Description: Signage Orchestrator, backend
+

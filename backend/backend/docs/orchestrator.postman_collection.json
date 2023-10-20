@@ -1,0 +1,992 @@
+{
+	"info": {
+		"_postman_id": "06f4e234-6f5f-4658-b4f0-86c15792c8ef",
+		"name": "SignageOrchestrator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "REST",
+			"item": [
+				{
+					"name": "Group",
+					"item": [
+						{
+							"name": "group",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/group/1/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"group",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "groups",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/groups/?loadPlayers=true",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"groups",
+										""
+									],
+									"query": [
+										{
+											"key": "loadPlayers",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "groups",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"name\": \"Group One\",\n        \"comment\": \"This is a comment\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/groups/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"groups",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "group",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"name\": \"Group One on One\",\n        \"comment\": \"This is a comment\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/group/1/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"group",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "group",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/group/1/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"group",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "group/players",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"player\": {\n            \"id\": 1\n        }\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/group/1/players/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"group",
+										"1",
+										"players",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "group/player",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/group/1/player/1/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"group",
+										"1",
+										"player",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Player",
+					"item": [
+						{
+							"name": "player",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/player/1/?loadGroup=true",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"player",
+										"1",
+										""
+									],
+									"query": [
+										{
+											"key": "loadGroup",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "players",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/players/?loadGroup=true",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"players",
+										""
+									],
+									"query": [
+										{
+											"key": "loadGroup",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "players",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"uuid\": \"UUID1\",\n        \"player_type\": \"slideshow\",\n        \"name\": \"Slideshow.1\",\n        \"position\": \"-\",\n        \"address\": \"10.0.120.200\",\n        \"comment\": \"This is just a comment\",\n        \"metrics\": \"Uptime: 10 day/s\",\n        \"ssh_public_key\": \"ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHJ6OsTwvwFI+rOqMzTMj6mMXSTIDInI8ZQKPgptMiJwPdmmc3ufXQFYRtny2B+80uSDQybbd70fR7atGWVjES8= root@empty\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/players/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"players",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Playlist",
+					"item": [
+						{
+							"name": "playlist",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/playlist/1/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"playlist",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "playlists",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/playlists/?filter=slideshow",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"playlists",
+										""
+									],
+									"query": [
+										{
+											"key": "filter",
+											"value": "slideshow"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "playlists",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"playlist_type\": \"slideshow\",\n        \"name\": \"Playlist Slideshow Demo\",\n        \"mediaconf\": \"IyBTZWUgaHR0cHM6Ly93d3cuYmluYXJ5ZW1vdGlvbnMuY29tL3Jhc3BiZXJyeS1zbGlkZXNob3ctZG93bmxvYWQvIGZvciBkb2NzLgojIEJlbG93IGV4YW1wbGUgbGluZXMuIE1vZGlmeSwgdGhlbiByZW1vdmUgdW5kZXNpcmVkIG9uZXMuCgojIFNUQVRJQyBDT05URU5UOgoKdXJsOiBodHRwczovL3d3dy5iaW5hcnllbW90aW9ucy5jb20vcnMtZGVmYXVsdC1tZWRpYS9TYW4uWmVuby5qcGcKCiMgUkVGUkVTSEFCTEUgQ09OVEVOVDoKCiMgU2VydmVyLW1hbmFnZWQgaW52ZW50b3J5LgpzZXJ2ZXJsaXN0OiBodHRwczovL3d3dy5iaW5hcnllbW90aW9ucy5jb20vcnMtZGVmYXVsdC1tZWRpYS9pbWFnZXMudHh0CgojIFNhbWJhIHNoYXJlLgpzbWIuc2hhcmU6IC8vMTkyLjE2OC4wLjIxMC9zaGFyZS90ZXN0CnNtYi51c2VybmFtZTogYWRtaW4Kc21iLnBhc3N3b3JkOiBwYXNzd29yZAoKIyBvd25DbG91ZC4Kd2ViZGF2LnVybDogaHR0cDovLzE5Mi4xNjguMC4yMTAvb3duY2xvdWQvcmVtb3RlLnBocC93ZWJkYXYKd2ViZGF2LmZvbGRlcjogZm9sZGVyCndlYmRhdi51c2VybmFtZTogdXNlcgp3ZWJkYXYucGFzc3dvcmQ6IHBhc3N3b3JkCgojIERyb3Bib3ggLSByZXF1aXJlcyBjb25maWd1cmF0aW9uIG9uIGVhY2ggcGxheWVyLCBzZWUgZG9jcy4KZHJvcGJveDogZW5hYmxlCgojIEdvb2dsZSBEcml2ZSAtIHJlcXVpcmVzIGNvbmZpZ3VyYXRpb24gb24gZWFjaCBwbGF5ZXIsIHNlZSBkb2NzLgpnZHJpdmU6IGVuYWJsZQpnZHJpdmUuZm9sZGVyOiBmb2xkZXIKCiMgQmFja2dyb3VuZCBtdXNpYyAtIHJlcXVpcmVzIGNvbmZpZ3VyYXRpb24gb24gZWFjaCBwbGF5ZXIsIHNlZSBkb2NzLgojIFBsYXlzIGJhY2tncm91bmQtbXVzaWMubXAzIGZpbGUsIGlmIGV4aXN0cyBpbiBmb2xkZXIuCmJhY2tncm91bmQtbXVzaWM6IGVuYWJsZQoKIyBSZW1vdGUgbWVkaWEgcmVmcmVzaC4gCiMgVmFsdWVzIHllc3xuby4KIyBJZiB5b3UgMSkgdXNlIG9ubHkgaW1hZ2VzIGFuZCAyKSBkbyBub3QgdXNlIHJlbW90ZSBtZWRpYSBvciBkbyBub3QgbmVlZCByZW1vdGUgbWVkaWEgbGlzdCB0byBiZSByZS1yZWFkIGR1cmluZyB0aGUgcGxheWJhY2ssIHNldCB0aGlzIHRvIG5vOiBpbWFnZXMgcGxheWJhY2sgd2lsbCBiZSBjb250aW51b3VzIHdpdGhvdXQgdGhlIGJsYW5rcyBuZWVkZWQgdG8gY2hlY2sgcmVtb3RlIGNoYW5nZXMuCm1lZGlhLnJlZnJlc2g6IG5v\",\n        \"transition\": 10,\n        \"blend\": 600\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/playlists/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"playlists",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "playlist",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"name\": \"Playlist 1\",\n        \"transition\": 10,\n        \"blend\": 60\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/playlist/1/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"playlist",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "playlist",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/playlist/1/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"playlist",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Event",
+					"item": [
+						{
+							"name": "events",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/events/?group_id=1&loadGroup=true,&loadPlaylist=true",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"events",
+										""
+									],
+									"query": [
+										{
+											"key": "group_id",
+											"value": "1"
+										},
+										{
+											"key": "loadGroup",
+											"value": "true,"
+										},
+										{
+											"key": "loadPlaylist",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "events (start date)",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/events/?group_id=1&start_date=2023-10-10 4:00&loadGroup=true,&loadPlaylist=true",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"events",
+										""
+									],
+									"query": [
+										{
+											"key": "group_id",
+											"value": "1"
+										},
+										{
+											"key": "start_date",
+											"value": "2023-10-10 4:00"
+										},
+										{
+											"key": "loadGroup",
+											"value": "true,"
+										},
+										{
+											"key": "loadPlaylist",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "events",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"id\": \"1694486000\",\n        \"start_date\": \"2023-10-10 4:00\",\n        \"end_date\": \"2023-10-10 16:00\",\n        \"text\": \"My First Event Ever\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/events/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"events",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "event",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"start_date\": \"2023-10-12 02:20\",\n        \"end_date\": \"2023-10-12 04:00\",\n        \"text\": \"My First Event Ever (but modified)\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/event/1694486000/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"event",
+										"1694486000",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "event",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/event/1694486000/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"event",
+										"1694486000",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "event/groups",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"group\": {\n            \"id\": 1\n        }\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/event/1694486000/groups/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"event",
+										"1694486000",
+										"groups",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "event/playlists",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"playlist\": {\n            \"id\": 1\n        }\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/event/1694486000/playlists/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"event",
+										"1694486000",
+										"playlists",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "event/playlist",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/event/1694486000/playlist/1/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"event",
+										"1694486000",
+										"playlist",
+										"1",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "TEST (empty vm)",
+					"item": [
+						{
+							"name": "[TEST] players",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "password",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "admin",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://10.0.120.200/backend/api/v1/backend/players/",
+									"protocol": "https",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"200"
+									],
+									"path": [
+										"backend",
+										"api",
+										"v1",
+										"backend",
+										"players",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[TEST] players",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "password",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "admin",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"uuid\": \"UUID1\",\n        \"player_type\": \"slideshow\",\n        \"name\": \"Slideshow.1\",\n        \"position\": \"-\",\n        \"address\": \"10.0.120.201\",\n        \"comment\": \"This is just a comment\",\n        \"metrics\": \"Uptime: 10 day/s\",\n        \"ssh_public_key\": \"ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBGBo42iTvIv0B/QhoHd2XkZ1vb6lKZ+a1M/AsbGR1xZ0+TJKITvLw7lfRfJdNAbR4CK7+/ec5iUKGUeZTGVmBTU= root@player\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://10.0.120.200/backend/api/v1/backend/players/",
+									"protocol": "https",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"200"
+									],
+									"path": [
+										"backend",
+										"api",
+										"v1",
+										"backend",
+										"players",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[TEST] events",
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "password",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "admin",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://10.0.120.200/backend/api/v1/backend/events/?loadGroup=true&loadPlaylist=true",
+									"protocol": "https",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"200"
+									],
+									"path": [
+										"backend",
+										"api",
+										"v1",
+										"backend",
+										"events",
+										""
+									],
+									"query": [
+										{
+											"key": "loadGroup",
+											"value": "true"
+										},
+										{
+											"key": "loadPlaylist",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

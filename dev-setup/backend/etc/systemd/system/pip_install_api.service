@@ -1,0 +1,17 @@
+[Unit]
+Description=pip_install
+
+[Service]
+Type=idle
+RemainAfterExit=no
+Restart=always
+RestartSec=60
+KillMode=process
+ExecStart=pip install --break-system-packages --upgrade pip; pip install --break-system-packages -r /var/www/backend/api/pip.requirements
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=pip_install
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+[Unit]
+Description=Orchestrator service
+
+[Service]
+Type=idle
+RemainAfterExit=no
+KillMode=process
+ExecStart=orchestrator.sh
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=orchestrator
+
+[Install]
+WantedBy=multi-user.target

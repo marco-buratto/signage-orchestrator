@@ -1,0 +1,9 @@
+[Unit]
+Description=Monitor /var/www/backend/api/pip.requirements for changes.
+Wants=pip_install_api.service
+
+[Path]
+PathChanged=/var/www/backend/api/pip.requirements
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+.idea
+*.pyc
+*.swp
+*/__pycache__
+backend/sql/backend.data-development.sql
+client.log
+*/.DS_Store

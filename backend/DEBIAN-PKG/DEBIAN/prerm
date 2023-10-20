@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -e
+
+a2dismod wsgi
+a2ensite 000-default || true
+a2query -s 000-revp && a2dissite 000-revp
+a2query -s 000-revptls && a2dissite 000-revptls
+a2query -s 001-api && a2dissite 001-api
+
+sed -i '/Listen 8000/d' /etc/apache2/ports.conf
+
+systemctl restart apache2
+
+echo PURGE | debconf-communicate signage-orchestrator-backend
+
+exit 0

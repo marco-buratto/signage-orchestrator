@@ -64,8 +64,20 @@ Login with *admin* as user and the password you have chosen.
 
 By the way, Signage Orchestrator is designed with security in mind, but of course in production environments or "untrusted networks", a valid TLS certificate is needed to be installed into Apache.
 
+------------
 
+***Players connection***
 
+All configured players (Pis running Raspberry Slideshow or Digital Signage) are enlisted in the Players table if configured.
+In order to configure a player, SSH into it as root, then:
 
+    cd /tmp
+    wget --no-check-certificate https://ORCHESTRATOR_ADDRESS/raspberry-player/player-connector.sh
+
+    bash player-connector.sh --action install --orchestrator-address ORCHESTRATOR_ADDRESS --orchestrator-password ORCHESTRATOR_PASSWORD --player-name PLAYER_NAME --player-position PLAYER_OPTIONAL_POSITION_NOTES --player-comment PLAYER_OPTIONAL_COMMENT
+
+ORCHESTRATOR_ADDRESS is the IP address or fqdn of your Signage Orchestrator installation and ORCHESTRATOR_PASSWORD is the password chosen when installing.
+
+PLAYER_NAME, PLAYER_OPTIONAL_POSITION_NOTES, PLAYER_OPTIONAL_COMMENT are properties of the player (Raspberry unit) itself, so how it will be displayed in the Orchestrator interface.
 
 

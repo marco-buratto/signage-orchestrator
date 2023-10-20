@@ -2,7 +2,8 @@
 
 # Load events which fire now and command the involved players.
 
-eventsSource="/tmp/events.list"
+stopEventsSource="/tmp/stop-events.list"
+startEventsSource="/tmp/start-events.list"
 now="$(date '+%Y-%m-%d %H:%M' | sed 's/ /%20/g' | sed 's/:/%3A/g')" # url encoded.
 orchestratorPassword="$(cat /etc/orchestrator.password)"
 
@@ -10,18 +11,18 @@ if [ -f /etc/orchestrator.password ]; then
     # Stop events which fire now.
     orchestratorUrl="http://localhost:8000/api/v1/backend/events/?loadGroup=true&loadPlaylist=false&end_date=${now}"
 
-    curl --request GET -u admin:${orchestratorPassword} ${orchestratorUrl} > ${eventsSource} 2>/dev/null
+    curl --request GET -u admin:${orchestratorPassword} ${orchestratorUrl} > ${stopEventsSource} 2>/dev/null
 
-    eventsNumber=$(cat ${eventsSource} | jq '. | .data.count')
+    eventsNumber=$(cat ${stopEventsSource} | jq '. | .data.count')
     if [ ${eventsNumber} -gt 0 ]; then
         for event in $(seq 0 $((${eventsNumber}-1))); do
-            playersNumber=$(cat ${eventsSource} | jq ". | .data.items[${event}].group.players_count")
+            playersNumber=$(cat ${stopEventsSource} | jq ". | .data.items[${event}].group.players_count")
             for player in $(seq 0 $((${playersNumber}-1))); do
                 (
-                    address=$(cat ${eventsSource} | jq ". | .data.items[${event}].group.players[${player}].address" | sed 's/\"//g')
+                    address=$(cat ${stopEventsSource} | jq ". | .data.items[${event}].group.players[${player}].address" | sed 's/\"//g')
 
                     echo "Processing ${address}: stopping Raspberry Slideshow..."
-                    su - www-data -c "ssh root@${address} systemctl stop rs"
+                    su - www-data -c "ssh root@${address} systemctl stop rs && echo -e \"\033c\" >/dev/tty1"
 
                     exit 0
                 ) &
@@ -31,18 +32,18 @@ if [ -f /etc/orchestrator.password ]; then
 
     # Start events which fire now.
     orchestratorUrl="http://localhost:8000/api/v1/backend/events/?loadGroup=true&loadPlaylist=true&start_date=${now}"
-    curl --request GET -u admin:${orchestratorPassword} ${orchestratorUrl} > ${eventsSource} 2>/dev/null
+    curl --request GET -u admin:${orchestratorPassword} ${orchestratorUrl} > ${startEventsSource} 2>/dev/null
 
-    eventsNumber=$(cat ${eventsSource} | jq '. | .data.count')
+    eventsNumber=$(cat ${startEventsSource} | jq '. | .data.count')
     if [ ${eventsNumber} -gt 0 ]; then
         for event in $(seq 0 $((${eventsNumber}-1))); do
-            playersNumber=$(cat ${eventsSource} | jq ". | .data.items[${event}].group.players_count")
+            playersNumber=$(cat ${startEventsSource} | jq ". | .data.items[${event}].group.players_count")
             for player in $(seq 0 $((${playersNumber}-1))); do
                 (
-                    address=$(cat ${eventsSource} | jq ". | .data.items[${event}].group.players[${player}].address" | sed 's/\"//g')
-                    mediaconf=$(cat ${eventsSource} | jq ". | .data.items[${event}].playlist.mediaconf" | sed 's/\"//g')
-                    transition=$(cat ${eventsSource} | jq ". | .data.items[${event}].playlist.transition")
-                    blend=$(cat ${eventsSource} | jq ". | .data.items[${event}].playlist.blend")
+                    address=$(cat ${startEventsSource} | jq ". | .data.items[${event}].group.players[${player}].address" | sed 's/\"//g')
+                    mediaconf=$(cat ${startEventsSource} | jq ". | .data.items[${event}].playlist.mediaconf" | sed 's/\"//g')
+                    transition=$(cat ${startEventsSource} | jq ". | .data.items[${event}].playlist.transition")
+                    blend=$(cat ${startEventsSource} | jq ". | .data.items[${event}].playlist.blend")
 
                     echo "Processing ${address}: configuring and starting Raspberry Slideshow..."
                     su - www-data -c "ssh root@${address} systemctl stop rs"

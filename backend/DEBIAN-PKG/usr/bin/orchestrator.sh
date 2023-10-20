@@ -22,7 +22,8 @@ if [ -f /etc/orchestrator.password ]; then
                     address=$(cat ${stopEventsSource} | jq ". | .data.items[${event}].group.players[${player}].address" | sed 's/\"//g')
 
                     echo "Processing ${address}: stopping Raspberry Slideshow..."
-                    su - www-data -c "ssh root@${address} systemctl stop rs && echo -e \"\033c\" >/dev/tty1"
+                    su - www-data -c "ssh root@${address} systemctl stop rs"
+                    su - www-data -c "ssh root@${address} tty1cleanup.sh"
 
                     exit 0
                 ) &

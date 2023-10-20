@@ -68,6 +68,17 @@ function System_setup()
     echo "$PLAYER_NAME" > /etc/player/name
     echo "$PLAYER_POSITION" > /etc/player/position
     echo "$PLAYER_COMMENT" > /etc/player/comment
+
+    # Add tty1cleanup script.
+    cat > /usr/bin/tty1cleanup.sh<<EOF
+#! /bin/bash
+
+dd if=/dev/zero of=/dev/fb0 >/dev/null 2>&1
+
+exit 0
+EOF
+
+    chmod +x /usr/bin/tty1cleanup.sh
 }
 
 
@@ -109,7 +120,7 @@ fi
 touch /root/.ssh/authorized_keys
 
 # Save returned orchestrator key into authorized keys, if not present.
-k=$(cat /tmp/orchestrator.response | jq '. | .data.orchestrator_ssh_public_key' | sed  's/"//g')
+k=$(cat /tmp/orchestrator.response | jq '. | .data.orchestrator_ssh_public_key' | sed 's/"//g')
 if ! grep -q "$k" /root/.ssh/authorized_keys; then
     echo "Saving Orchestrator SSH public key into known hosts..."
     echo "$k" >> /root/.ssh/authorized_keys

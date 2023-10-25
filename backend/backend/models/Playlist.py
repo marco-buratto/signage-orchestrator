@@ -3,7 +3,6 @@ from typing import List
 
 from backend.models.repository.Playlist import Playlist as Repository
 
-from backend.helpers.Exception import CustomException
 from backend.helpers.Misc import Misc
 
 
@@ -63,11 +62,8 @@ class Playlist:
     ####################################################################################################################
 
     @staticmethod
-    def list(filter: str = "") -> List[Playlist]:
+    def list(filter: str) -> List[Playlist]:
         playlists = []
-
-        if filter not in ("web", "slideshow"):
-            raise CustomException(status=400)
 
         try:
             for playlist in Repository.list(filter=filter):

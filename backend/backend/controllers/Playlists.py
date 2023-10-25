@@ -15,7 +15,7 @@ from backend.helpers.Log import Log
 class PlaylistsController(CustomController):
     @staticmethod
     def get(request: Request) -> Response:
-        filter = ""
+        filter = "all"
         if "filter" in request.GET:
             f = request.GET.get("filter")
             if "web" in f:

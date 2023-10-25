@@ -71,7 +71,7 @@
 
             async listPlaylists() {
                 try {
-                    this.playlists = await this.get(this.backendUrl + "playlists/?filter=slideshow");
+                    this.playlists = await this.get(this.backendUrl + "playlists/");
                     this.playlists = [{"id": 0, "name": "--"}].concat(this.playlists.data.items);
                     this.playlists.forEach((p, i) => {
                         // Add additional lightbox needed keys.

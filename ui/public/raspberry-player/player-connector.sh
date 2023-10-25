@@ -15,11 +15,13 @@ function System()
 
     # Properties list.
     ACTION="$ACTION"
+    PLAYER_TYPE="$PLAYER_TYPE"
     ORCHESTRATOR_ADDRESS="$ORCHESTRATOR_ADDRESS"
     ORCHESTRATOR_PASSWORD="$ORCHESTRATOR_PASSWORD"
     PLAYER_NAME="$PLAYER_NAME"
     PLAYER_POSITION="$PLAYER_POSITION"
     PLAYER_COMMENT="$PLAYER_COMMENT"
+    CHECK_TLS="$CHECK_TLS"
 }
 
 # ##################################################################################################################################################
@@ -65,12 +67,15 @@ function System_setup()
 
     echo "$ORCHESTRATOR_ADDRESS" > /etc/player/orchestrator.address
     echo "$ORCHESTRATOR_PASSWORD" > /etc/player/orchestrator.password
+    echo "$PLAYER_TYPE" > /etc/player/type
     echo "$PLAYER_NAME" > /etc/player/name
     echo "$PLAYER_POSITION" > /etc/player/position
     echo "$PLAYER_COMMENT" > /etc/player/comment
+    echo "$CHECK_TLS" > /etc/player/connection.checktls
 
-    # Add tty1cleanup script.
-    cat > /usr/bin/tty1cleanup.sh<<EOF
+    if [ "$PLAYER_TYPE" == "slideshow" ]; then
+        # Add tty1cleanup script.
+        cat > /usr/bin/tty1cleanup.sh<<EOF
 #! /bin/bash
 
 dd if=/dev/zero of=/dev/fb0 >/dev/null 2>&1
@@ -78,7 +83,8 @@ dd if=/dev/zero of=/dev/fb0 >/dev/null 2>&1
 exit 0
 EOF
 
-    chmod +x /usr/bin/tty1cleanup.sh
+        chmod +x /usr/bin/tty1cleanup.sh
+    fi
 }
 
 
@@ -89,9 +95,15 @@ function System_playerServiceInstall()
 
 orchestratorUrl="https://$(echo -n $(cat /etc/player/orchestrator.address))/backend/api/v1/backend/players/"
 orchestratorPassword="$(echo -n $(cat /etc/player/orchestrator.password))"
+checkTls="$(echo -n $(cat /etc/player/connection.checktls))"
+if [ "$checkTls" == "yes" ]; then
+    secureConnectionFlag=""
+else
+    secureConnectionFlag="--insecure"
+fi
 
 uuid="$(echo -n $(ip -o link show | grep -oP '(?<=ether ).*(?=$)' | tail -1 | sed 's/brd.*//g' | sed 's/ //g' | sed 's/://g'))"
-playerType="slideshow"
+playerType="$(echo -n $(cat /etc/player/type))"
 name="$(echo -n $(cat /etc/player/name))"
 position="$(echo -n $(cat /etc/player/position))"
 address="$(echo -n $(ip a | grep 'inet ' | grep -v 'host lo' | tail -1 | grep -oP '(?<=inet ).*(?=/24)'))"
@@ -99,7 +111,7 @@ comment="$(echo -n $(cat /etc/player/comment))"
 metrics="$(echo -n uptime: $(uptime | grep -oP '(<?up).*(?=,)' | awk -F',' '{print $1}' | sed 's/ //g' | sed 's/up//g'))"
 
 sshPublicKey="$(echo -n $(cat /etc/ssh/ssh_host_rsa_key.pub))"
-curl --insecure -u admin:${orchestratorPassword} ${orchestratorUrl} --header 'Content-Type: application/json' --data \
+curl ${secureConnectionFlag} -u admin:${orchestratorPassword} ${orchestratorUrl} --header 'Content-Type: application/json' --data \
 "{
     \"data\": {
         \"uuid\": \"${uuid}\",
@@ -175,11 +187,13 @@ EOF
 # ##################################################################################################################################################
 
 ACTION=""
+PLAYER_TYPE=""
 ORCHESTRATOR_ADDRESS=""
 ORCHESTRATOR_PASSWORD=""
 PLAYER_NAME=""
 PLAYER_POSITION=""
 PLAYER_COMMENT=""
+CHECK_TLS="yes"
 
 # Must be run as root.
 ID=$(id -u)
@@ -198,6 +212,12 @@ while [[ $# -gt 0 ]]; do
             shift
             shift
             ;;
+
+        --player-type)
+            PLAYER_TYPE="$2"
+            shift
+            shift
+            ;;            
 
         --orchestrator-address)
             ORCHESTRATOR_ADDRESS="$2"
@@ -229,14 +249,20 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
 
+        --check-tls)
+            CHECK_TLS="$2"
+            shift
+            shift
+            ;;            
+
         *)
             shift
             ;;
     esac
 done
 
-if [ -z "$ACTION" ] || [ -z "$ORCHESTRATOR_ADDRESS" ] || [ -z "$ORCHESTRATOR_PASSWORD" ] || [ -z "$PLAYER_NAME" ]; then
-    echo "Missing parameters. Use --action install --orchestrator-address IP_OR_FQDN --orchestrator-password PASSWORD --player-name NAME --player-position OPTIONAL_POSITION_NOTES --player-comment OPTIONAL_COMMENT"
+if [ -z "$ACTION" ] || [ -z "$PLAYER_TYPE" ] || [ -z "$ORCHESTRATOR_ADDRESS" ] || [ -z "$ORCHESTRATOR_PASSWORD" ] || [ -z "$PLAYER_NAME" ]; then
+    echo "Missing parameters. Use --action install --player-type web|slideshow --orchestrator-address IP_OR_FQDN --orchestrator-password PASSWORD --player-name NAME --player-position OPTIONAL_POSITION_NOTES --player-comment OPTIONAL_COMMENT --check-tls yes|no"
 else
     System "system"
     $system_run

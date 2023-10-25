@@ -16,9 +16,9 @@
                 columns: [
                     { title: 'Name', dataIndex: 'name', key: 'name', defaultSortOrder: 'ascend', sortDirections: ['ascend'], width: '25%' },
                     { title: 'media.conf', dataIndex: 'mediaconf', key: 'mediaconf', width: '75%' },
-                    { title: 'Transition time (s)', dataIndex: 'transition', key: 'transition', width: 160 },
-                    { title: 'Blend time (ms)', dataIndex: 'blend', key: 'blend', width: 160 },
-                    { title: '', dataIndex: 'operation', width: 120 }
+                    { title: 'Transition time', dataIndex: 'transition', key: 'transition', width: 140 },
+                    { title: 'Blend time', dataIndex: 'blend', key: 'blend', width: 140 },
+                    { title: '', dataIndex: 'operation', width: 90 }
                 ],
                 selectedPlaylistsIds: [],
                 rowSelection: {

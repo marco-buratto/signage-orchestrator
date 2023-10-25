@@ -14,13 +14,13 @@
             return {
                 playlists: [],
                 columns: [
-                    { title: 'Name', dataIndex: 'name', key: 'name', defaultSortOrder: 'ascend', sortDirections: ['ascend'], width: '25%' },
-                    { title: 'URL', dataIndex: 'url', key: 'url', width: '75%' },
-                    { title: 'Compatibility mode', dataIndex: 'compatibility', key: 'compatibility', width: 180 },
-                    { title: 'Pointer disabled', dataIndex: 'pointer_disabled', key: 'pointer_disabled', width: 180 },
-                    { title: 'Reset time (min)', dataIndex: 'reset_time_min', key: 'reset_time_min', width: 180 },
-                    { title: 'Reload time (s)', dataIndex: 'reload_time_s', key: 'reload_time_s', width: 180 },
-                    { title: '', dataIndex: 'operation', width: 120 }
+                    { title: 'Name', dataIndex: 'name', key: 'name', defaultSortOrder: 'ascend', sortDirections: ['ascend'], width: 120 },
+                    { title: 'URL', dataIndex: 'url', key: 'url', width: '100%' },
+                    { title: 'Compatibility', dataIndex: 'compatibility', key: 'compatibility', width: 140 },
+                    { title: 'Pointer disabled', dataIndex: 'pointer_disabled', key: 'pointer_disabled', width: 140 },
+                    { title: 'Reset time', dataIndex: 'reset_time_min', key: 'reset_time_min', width: 120 },
+                    { title: 'Reload time', dataIndex: 'reload_time_s', key: 'reload_time_s', width: 120 },
+                    { title: '', dataIndex: 'operation', width: 90 }
                 ],
                 selectedPlaylistsIds: [],
                 rowSelection: {

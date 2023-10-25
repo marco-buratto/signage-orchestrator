@@ -1,11 +1,6 @@
 -- phpMyAdmin SQL Dump
 -- version 5.1.3
 -- https://www.phpmyadmin.net/
---
--- Host: localhost
--- Creato il: Ott 11, 2023 alle 14:03
--- Versione del server: 10.5.21-MariaDB-0+deb11u1
--- Versione PHP: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -46,7 +41,7 @@ CREATE TABLE `player` (
   `id` int(11) NOT NULL,
   `group_id` int(11) DEFAULT NULL,
   `uuid` varchar(64) NOT NULL,
-  `player_type` enum('signage','slideshow') NOT NULL,
+  `player_type` enum('web','slideshow') NOT NULL,
   `name` varchar(255) NOT NULL,
   `position` varchar(255) DEFAULT NULL,
   `address` varchar(255) NOT NULL,
@@ -76,7 +71,12 @@ CREATE TABLE `playersgroup` (
 CREATE TABLE `playlist` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `playlist_type` enum('signage','slideshow') NOT NULL,
+  `playlist_type` enum('web','slideshow') NOT NULL,
+  `url` varchar(2048) DEFAULT NULL,
+  `compatibility` tinyint(4) DEFAULT NULL,
+  `pointer_disabled` tinyint(4) DEFAULT NULL,
+  `reset_time_min` int(11) DEFAULT NULL,
+  `reload_time_s` int(11) DEFAULT NULL,
   `mediaconf` text DEFAULT NULL,
   `transition` int(11) DEFAULT NULL,
   `blend` int(11) DEFAULT NULL

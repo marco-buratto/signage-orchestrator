@@ -18,8 +18,8 @@ class PlaylistsController(CustomController):
         filter = ""
         if "filter" in request.GET:
             f = request.GET.get("filter")
-            if "signage" in f:
-                filter = "signage"
+            if "web" in f:
+                filter = "web"
             if "slideshow" in f:
                 filter = "slideshow"
 

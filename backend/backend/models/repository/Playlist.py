@@ -22,12 +22,29 @@ class Playlist:
 
         try:
             c.execute(
-                "SELECT id, playlist_type, name, IFNULL(mediaconf, '') AS mediaconf, IFNULL(transition, 0) AS transition, IFNULL(blend, 0) AS blend "
+                "SELECT "
+                    "id, "
+                    "playlist_type, "
+                    "name, "
+                
+                    "IFNULL(url, '') AS url, "
+                    "IFNULL(compatibility, 0) AS compatibility, "
+                    "IFNULL(pointer_disabled, 0) AS pointer_disabled, "
+                    "IFNULL(reset_time_min, 0) AS reset_time_min, "
+                    "IFNULL(reload_time_s, 0) AS reload_time_s, "
+                
+                    "IFNULL(mediaconf, '') AS mediaconf, "                
+                    "IFNULL(transition, 0) AS transition, "
+                    "IFNULL(blend, 0) AS blend "
                 "FROM playlist "
                 "WHERE id = %s", [id]
             )
 
-            return DBHelper.asDict(c)[0]
+            o = DBHelper.asDict(c)[0]
+            o["compatibility"] = bool(o.get("compatibility", 0))
+            o["pointer_disabled"] = bool(o.get("pointer_disabled", 0))
+
+            return o
         except IndexError:
             raise CustomException(status=404, payload={"Signage Orchestrator Backend": "Non existent playlist"})
         except Exception as e:
@@ -42,18 +59,36 @@ class Playlist:
         condition = "WHERE 1"
         c = connection.cursor()
 
-        if filter == "signage":
-            condition = "WHERE playlist_type LIKE 'signage'"
+        if filter == "web":
+            condition = "WHERE playlist_type LIKE 'web'"
         if filter == "slideshow":
             condition = "WHERE playlist_type LIKE 'slideshow'"
 
         try:
             c.execute(
-                "SELECT id, playlist_type, name, IFNULL(mediaconf, '') AS mediaconf, IFNULL(transition, 0) AS transition, IFNULL(blend, 0) AS blend "
+                "SELECT "
+                    "id, "
+                    "playlist_type, "
+                    "name, "
+                
+                    "IFNULL(url, '') AS url, "
+                    "IFNULL(compatibility, 0) AS compatibility, "
+                    "IFNULL(pointer_disabled, 0) AS pointer_disabled, "
+                    "IFNULL(reset_time_min, 0) AS reset_time_min, "
+                    "IFNULL(reload_time_s, 0) AS reload_time_s, "
+                
+                    "IFNULL(mediaconf, '') AS mediaconf, "                
+                    "IFNULL(transition, 0) AS transition, "
+                    "IFNULL(blend, 0) AS blend "
                 "FROM playlist " + condition
             )
 
-            return DBHelper.asDict(c)
+            l = DBHelper.asDict(c)
+            for el in l:
+                el["compatibility"] = bool(el.get("compatibility", 0))
+                el["pointer_disabled"] = bool(el.get("pointer_disabled", 0))
+
+            return l
         except Exception as e:
             raise CustomException(status=400, payload={"Signage Orchestrator Backend": e.__str__()})
         finally:
@@ -73,7 +108,10 @@ class Playlist:
         for k, v in data.items():
             s += "%s,"
             keys += k + ","
-            values.append(strip_tags(v)) # no HTML allowed.
+            if k in ("compatibility", "pointer_disabled"):
+                values.append(int(v))
+            else:
+                values.append(strip_tags(v)) # no HTML allowed.
 
         keys = keys[:-1]+")"
 
@@ -101,8 +139,12 @@ class Playlist:
 
         # %s placeholders and values for SET.
         for k, v in data.items():
-            sql += k + "=%s,"
-            values.append(strip_tags(v)) # no HTML allowed.
+            if k != "playlist_type":
+                sql += k + "=%s,"
+                if k in ("compatibility", "pointer_disabled"):
+                    values.append(int(v))
+                else:
+                    values.append(strip_tags(v)) # no HTML allowed.
 
         values.append(id)
 

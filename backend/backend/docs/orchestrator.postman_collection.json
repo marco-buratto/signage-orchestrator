@@ -394,7 +394,41 @@
 							"response": []
 						},
 						{
-							"name": "playlists",
+							"name": "playlists (web)",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/playlists/?filter=web",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"playlists",
+										""
+									],
+									"query": [
+										{
+											"key": "filter",
+											"value": "web"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "playlists (slideshow)",
 							"request": {
 								"auth": {
 									"type": "noauth"
@@ -428,7 +462,44 @@
 							"response": []
 						},
 						{
-							"name": "playlists",
+							"name": "playlists (web)",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"data\": {\n        \"playlist_type\": \"web\",\n        \"name\": \"Playlist Digital Signage Demo\",\n        \"url\": \"https://www.binaryemotions.com\",\n        \"compatibility\": false,\n        \"pointer_disabled\": false,\n        \"reset_time_min\": 10,\n        \"reload_time_s\": 60\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/playlists/",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"playlists",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "playlists (slideshow)",
 							"request": {
 								"auth": {
 									"type": "noauth"

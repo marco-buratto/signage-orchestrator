@@ -3,8 +3,8 @@ from typing import List
 
 from backend.models.repository.Playlist import Playlist as Repository
 
+from backend.helpers.Exception import CustomException
 from backend.helpers.Misc import Misc
-from backend.helpers.Log import Log
 
 
 class Playlist:
@@ -12,8 +12,15 @@ class Playlist:
         super().__init__(*args, **kwargs)
 
         self.id: int = int(id)
-        self.playlist_type: str = ""
+        self.playlist_type: str = "" # "web" | "slideshow".
         self.name: str = ""
+
+        self.url: str = ""
+        self.compatibility: bool = False
+        self.pointer_disabled: bool = False
+        self.reset_time_min: int = 0
+        self.reload_time_s: int = 0
+
         self.mediaconf: str = "" # base64.
         self.transition: int = 0
         self.blend: int = 0
@@ -58,6 +65,9 @@ class Playlist:
     @staticmethod
     def list(filter: str = "") -> List[Playlist]:
         playlists = []
+
+        if filter not in ("web", "slideshow"):
+            raise CustomException(status=400)
 
         try:
             for playlist in Repository.list(filter=filter):

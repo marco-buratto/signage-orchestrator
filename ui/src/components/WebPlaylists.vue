@@ -36,7 +36,8 @@
                 },       
                 openModal: false,
                 currentPlaylist: {},
-                currentPlaylistError: {}
+                currentPlaylistError: {},
+                currentPlaylistDisabled: {},
             };
         },
         async created () {
@@ -89,6 +90,19 @@
                     url: "",
                     reset_time_min: "",
                     reload_time_s: ""
+                }
+
+                this.currentPlaylistDisabled.reload_time_s = false;
+                if (this.currentPlaylist.rds.compatibility == "no") {
+                    this.currentPlaylistDisabled.reload_time_s = true;
+                }
+            },
+
+            modalCompatibilityModeChange(v) {
+                this.currentPlaylistDisabled.reload_time_s = false;
+                if (v == "no") {
+                    this.currentPlaylistDisabled.reload_time_s = true;
+                    this.currentPlaylist.rds.reload_time_s = 0;
                 }
             },
 
@@ -268,7 +282,7 @@
         URL:<br/><a-input v-model:value="currentPlaylist.rds.url" :status="currentPlaylistError.url" @change="currentPlaylistError.url=''"></a-input><br /><br />
 
         Compatibility mode:<br/> 
-        <a-select v-model:value="currentPlaylist.rds.compatibility" style="width: 602px">
+        <a-select v-model:value="currentPlaylist.rds.compatibility" @change="modalCompatibilityModeChange" style="width: 602px">
             <a-select-option value="no">no</a-select-option>
             <a-select-option value="yes">yes</a-select-option>
         </a-select><br /><br />
@@ -280,7 +294,7 @@
         </a-select><br /><br />        
         
         Reset time (min):<br/> <a-input v-model:value="currentPlaylist.rds.reset_time_min" :status="currentPlaylistError.reset_time_min" @change="currentPlaylistError.reset_time_min=''"></a-input><br /><br />
-        Reload time (s):<br/> <a-input v-model:value="currentPlaylist.rds.reload_time_s" :status="currentPlaylistError.reload_time_s" @change="currentPlaylistError.reload_time_s=''"></a-input><br /><br />
+        Reload time (s):<br/> <a-input v-model:value="currentPlaylist.rds.reload_time_s" :disabled="currentPlaylistDisabled.reload_time_s" :status="currentPlaylistError.reload_time_s" @change="currentPlaylistError.reload_time_s=''"></a-input><br /><br />
     </a-modal>
 
     <a-space wrap>

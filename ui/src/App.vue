@@ -3,20 +3,21 @@
 
     import Groups from "./components/Groups.vue"
     import Players from "./components/Players.vue"
-    import Playlists from "./components/Playlists.vue"
+    import WebPlaylists from "./components/WebPlaylists.vue"
+    import SlideshowPlaylists from "./components/SlideshowPlaylists.vue"
     import SchedulerInterface from "./components/SchedulerInterface.vue"
 
     export default {
-        components: { GroupOutlined, AppstoreOutlined, PlaySquareOutlined, FieldTimeOutlined, Groups, SchedulerInterface, Players, Playlists },
+        components: { GroupOutlined, AppstoreOutlined, PlaySquareOutlined, FieldTimeOutlined, Groups, SchedulerInterface, Players, WebPlaylists, SlideshowPlaylists },
         data() {
             return {
-                selectedKeys: ["4"],
-                selectedView: "4"
+                selectedKeys: ["5"],
+                selectedView: "5"
             };
         },
         watch: {
             selectedKeys(n, o) {
-                if (n[0] != 5)
+                if (n[0] != 6)
                     this.selectedView = n[0];
             }
         },
@@ -35,10 +36,11 @@
             >
                 <a-menu-item key="1"><GroupOutlined/> Groups</a-menu-item>
                 <a-menu-item key="2"><AppstoreOutlined/> Players</a-menu-item>
-                <a-menu-item key="3"><PlaySquareOutlined/> Slideshow Playlists</a-menu-item>
-                <a-menu-item key="4"><FieldTimeOutlined/> Events</a-menu-item>
-                
-                <a-menu-item key="5">
+                <a-menu-item key="3"><PlaySquareOutlined/> Web Signage Playlists</a-menu-item>
+                <a-menu-item key="4"><PlaySquareOutlined/> Slideshow Playlists</a-menu-item>
+                <a-menu-item key="5"><FieldTimeOutlined/> Events</a-menu-item>
+
+                <a-menu-item key="6">
                     <a-tooltip placement="bottom">
                         <template #title>
                             <div>
@@ -60,11 +62,14 @@
                     <Players></Players>
                 </div>
                 <div v-if="selectedView == '3'">
-                    <Playlists></Playlists>
-                </div>                
+                    <WebPlaylists></WebPlaylists>
+                </div>
                 <div v-if="selectedView == '4'">
+                    <SlideshowPlaylists></SlideshowPlaylists>
+                </div>         
+                <div v-if="selectedView == '5'">
                     <SchedulerInterface></SchedulerInterface>
-                </div>                
+                </div>
             </div>
         </a-layout-content>
         <a-layout-footer :style="{ textAlign: 'center' }">

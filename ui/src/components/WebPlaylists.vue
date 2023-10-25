@@ -93,14 +93,14 @@
                 }
 
                 this.currentPlaylistDisabled.reload_time_s = false;
-                if (this.currentPlaylist.rds.compatibility == "no") {
+                if (this.currentPlaylist.rds.compatibility == "yes") {
                     this.currentPlaylistDisabled.reload_time_s = true;
                 }
             },
 
             modalCompatibilityModeChange(v) {
                 this.currentPlaylistDisabled.reload_time_s = false;
-                if (v == "no") {
+                if (v == "yes") {
                     this.currentPlaylistDisabled.reload_time_s = true;
                     this.currentPlaylist.rds.reload_time_s = 0;
                 }

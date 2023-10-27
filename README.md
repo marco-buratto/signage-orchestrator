@@ -13,12 +13,16 @@ Playlists are player configurations.
 
 Essentially, for Raspberry Slideshow a playlist is the <em>media.conf</em> directives, plus the transition and blend time of images:
 
-![Usage3](docs/usage/playlists.png)
+![Usage3](docs/usage/slideshow.playlists.png)
+
+For Raspberry Digital Signage, a playlist contains the following information:
+
+![Usage4](docs/usage/web.playlists.png)
 
 In the Events tab you can schedule a group of players to use a playlist:
 
-![Usage4](docs/usage/events.png)
-![Usage5](docs/usage/events.detail.png)
+![Usage5](docs/usage/events.png)
+![Usage6](docs/usage/events.detail.png)
 
 Please note that in the Events tab you need to select the Group, then all events related to it will be displayed.
 

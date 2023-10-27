@@ -1,3 +1,5 @@
+import urllib.parse
+
 from django.db import connection
 from django.db import transaction
 from django.utils.html import strip_tags
@@ -41,6 +43,7 @@ class Playlist:
             )
 
             o = DBHelper.asDict(c)[0]
+            o["url"] = urllib.parse.unquote(o.get("url", ""))
             o["compatibility"] = bool(o.get("compatibility", 0))
             o["pointer_disabled"] = bool(o.get("pointer_disabled", 0))
 
@@ -85,6 +88,7 @@ class Playlist:
 
             l = DBHelper.asDict(c)
             for el in l:
+                el["url"] = urllib.parse.unquote(el.get("url", ""))
                 el["compatibility"] = bool(el.get("compatibility", 0))
                 el["pointer_disabled"] = bool(el.get("pointer_disabled", 0))
 
@@ -108,7 +112,9 @@ class Playlist:
         for k, v in data.items():
             s += "%s,"
             keys += k + ","
-            if k in ("compatibility", "pointer_disabled"):
+            if k == "url":
+                values.append(urllib.parse.quote(v))
+            elif k in ("compatibility", "pointer_disabled"):
                 values.append(int(v))
             else:
                 values.append(strip_tags(v)) # no HTML allowed.
@@ -141,7 +147,9 @@ class Playlist:
         for k, v in data.items():
             if k != "playlist_type":
                 sql += k + "=%s,"
-                if k in ("compatibility", "pointer_disabled"):
+                if k == "url":
+                    values.append(urllib.parse.quote(v))
+                elif k in ("compatibility", "pointer_disabled"):
                     values.append(int(v))
                 else:
                     values.append(strip_tags(v)) # no HTML allowed.

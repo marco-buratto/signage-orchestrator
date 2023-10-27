@@ -238,9 +238,10 @@
                     notification.open({
                         description: message
                     });
-
+                }
+                finally {
                     this.list(); // refetch remote datastore.
-                }  
+                }   
             },            
 
             async __delete(id) {

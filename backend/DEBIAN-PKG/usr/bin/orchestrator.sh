@@ -19,6 +19,24 @@ if [ -f /etc/orchestrator.password ]; then
         for event in $(seq 0 $((${eventsNumber}-1))); do
             playlistType=$(cat ${stopEventsSource} | jq ". | .data.items[${event}].playlist.playlist_type" | sed 's/\"//g')
 
+            # Raspberry Digital Signage.
+            if [ "${playlistType}" == "web" ]; then
+                playersNumber=$(cat ${stopEventsSource} | jq ". | .data.items[${event}].group.players_count")
+                for player in $(seq 0 $((${playersNumber}-1))); do
+                    (
+                        playerType=$(cat ${stopEventsSource} | jq ". | .data.items[${event}].group.players[${player}].player_type" | sed 's/\"//g')
+                        if [ "${playerType}" == "web" ]; then
+                            address=$(cat ${stopEventsSource} | jq ". | .data.items[${event}].group.players[${player}].address" | sed 's/\"//g')
+
+                            echo "Processing ${address}: stopping Raspberry Digital Signage..." | logger
+                            su - www-data -c "ssh root@${address} systemctl stop rds"
+                        fi
+
+                        exit 0
+                    ) & # parallel subshells.
+                done
+            fi
+
             # Raspberry Slideshow.
             if [ "${playlistType}" == "slideshow" ]; then
                 playersNumber=$(cat ${stopEventsSource} | jq ". | .data.items[${event}].group.players_count")
@@ -48,6 +66,43 @@ if [ -f /etc/orchestrator.password ]; then
     if [ ${eventsNumber} -gt 0 ]; then
         for event in $(seq 0 $((${eventsNumber}-1))); do
             playlistType=$(cat ${startEventsSource} | jq ". | .data.items[${event}].playlist.playlist_type" | sed 's/\"//g')
+
+            # Raspberry Digital Signage.
+            if [ "${playlistType}" == "web" ]; then
+                playersNumber=$(cat ${startEventsSource} | jq ". | .data.items[${event}].group.players_count")
+                for player in $(seq 0 $((${playersNumber}-1))); do
+                    (
+                        playerType=$(cat ${startEventsSource} | jq ". | .data.items[${event}].group.players[${player}].player_type" | sed 's/\"//g')
+                        if [ "${playerType}" == "web" ]; then
+                            address=$(cat ${startEventsSource} | jq ". | .data.items[${event}].group.players[${player}].address" | sed 's/\"//g')
+                            url=$(cat ${startEventsSource} | jq ". | .data.items[${event}].playlist.url" | sed 's/\"//g')
+                            compatibility=$(cat ${startEventsSource} | jq ". | .data.items[${event}].playlist.compatibility")
+                            if [ "${compatibility}" == "true" ]; then
+                                compatibility="yes"
+                            else
+                                compatibility="no"
+                            fi
+
+                            pointer_disabled=$(cat ${startEventsSource} | jq ". | .data.items[${event}].playlist.pointer_disabled")
+                            if [ "${pointer_disabled}" == "true" ]; then
+                                pointer_disabled="yes"
+                            else
+                                pointer_disabled="no"
+                            fi
+
+                            reset_time_min=$(cat ${startEventsSource} | jq ". | .data.items[${event}].playlist.reset_time_min")
+                            reload_time_s=$(cat ${startEventsSource} | jq ". | .data.items[${event}].playlist.reload_time_s")
+
+                            echo "Processing ${address}: configuring and starting Raspberry Digital Signage..." | logger
+                            su - www-data -c "ssh root@${address} systemctl stop rds"
+                            su - www-data -c "ssh root@${address} /rds/bin/actuators/rds/kiosk.sh --url \"${url}\" --compatibility ${compatibility} --browser-reload-timeout ${reset_time_min} --page-reload-frequency ${reload_time_s} --mouse-pointer-disabled ${pointer_disabled}"
+                            su - www-data -c "ssh root@${address} /rds/bin/actuators/rds/restart.sh | at now"
+                        fi
+
+                        exit 0
+                    ) & # parallel subshells.
+                done
+            fi
 
             # Raspberry Slideshow.
             if [ "${playlistType}" == "slideshow" ]; then

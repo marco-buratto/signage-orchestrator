@@ -1,6 +1,6 @@
 **SIGNAGE ORCHESTRATOR** 
 
-Signage Orchestrator is a central web interface you can use to schedule Raspberry Slideshow and Raspberry Digital Signage units (“players”) to display web urls/slide media in a calendar-based timetable.
+Signage Orchestrator is a central web interface you can use to schedule Raspberry Slideshow and Raspberry Digital Signage units (“players”) to slide media/display web urls in a calendar-based timetable.
 
 All available players are enlisted in the Players table, if configured to use the Orchestrator.
 
@@ -19,7 +19,7 @@ For Raspberry Digital Signage, a playlist contains the following information:
 
 ![Usage4](docs/usage/web.playlists.png)
 
-In the Events tab you can schedule a group of players to use a playlist:
+In the Events tab you can schedule a group of players to use a playlist (of course, Raspberry Slideshow players can only run Slideshow Playlists, while Raspberry Digital Signage players are only able to run Web Signage Playlists):
 
 ![Usage5](docs/usage/events.png)
 ![Usage6](docs/usage/events.detail.png)

@@ -57,6 +57,11 @@ During the installation, debconf will ask you to set the timezone according to y
 
 Please be sure the time of the operating system is always correct: configure systemd-timesyncd or install another NTP service for the purpose.
 
+Just a note, the following APT message you'll see at the end of the process is NOT an error:
+
+    N: Download is performed unsandboxed as root as file '/root/signage-orchestrator-backend_1.1-1_all.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
+
+
 ------------
 
 ***First access***

@@ -82,9 +82,10 @@ In order to configure a player, SSH into it as root, then:
     bash player-connector.sh --action install --player-type web|slideshow --orchestrator-address ORCHESTRATOR_ADDRESS --orchestrator-password ORCHESTRATOR_PASSWORD --player-name PLAYER_NAME --player-position PLAYER_OPTIONAL_POSITION_NOTES --player-comment PLAYER_OPTIONAL_COMMENT --check-tls yes|no
 
 --player-type: on Raspberry Slideshow players use "slideshow"; on Raspberry Digital Signage players use "web".
+
 ORCHESTRATOR_ADDRESS is the IP address or fqdn of your Signage Orchestrator installation and ORCHESTRATOR_PASSWORD is the password chosen when installing.
 
 PLAYER_NAME, PLAYER_OPTIONAL_POSITION_NOTES, PLAYER_OPTIONAL_COMMENT are properties of the player (Raspberry unit) itself, so how it will be displayed in the Orchestrator interface.
 
---check-tls: use "no" unless you have installed a valid certificate on the Orchestrator
+--check-tls: use "no" unless you have installed a valid certificate on the Orchestrator.
 

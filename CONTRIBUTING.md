@@ -3,6 +3,8 @@
 Signage Orchestrator is composed by two services, a Python3 backend and a Vue.js frontend. 
 In development, two Vagrant virtual machines are used, one for each node, backend and ui.
 
+------------
+
 **LINUX development host requirements**
 - Tested on modern Debian and Ubuntu OS; any other should work.
 - Vagrant and VirtualBox are needed.
@@ -63,6 +65,7 @@ In development, two Vagrant virtual machines are used, one for each node, backen
       VAGRANTERS ALL=(root) NOPASSWD: VAGRANTSH
       EOF
 
+------------
 
 **LET'S GO!**
 
@@ -72,9 +75,25 @@ Once nodes are created and running:
             
  2. Signage Orchestrator is an "API-first" project. A Postman collection in saved in backend/backend/docs.
 
+Operate into nodes:
 
-**Notes**
+        vagrant ssh <backend|ui>
+        sudo -i
 
-Update database when its schema changes: 
+Each vm logs into syslog.
+
+****BACKEND****
+
+Use Postman to write/test APIs.
+
+A database GUI (phpMyAdmin) is available at http://10.0.120.100:8000/ 
+
+Update database when schema changes: 
 
     vagrant provision backend --provision-with db
+
+****UI****
+
+Restart the npm dev server after a modification, when it does not detect it automatically:
+
+    systemctl restart npm 

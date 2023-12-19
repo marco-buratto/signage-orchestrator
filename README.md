@@ -34,7 +34,7 @@ In the images, for example, all the players associated to the "Mall public playe
 
 ***Installation***
 
-A Debian 12 Bookworm operating system is needed in order to deploy Signage Orchestrator.
+A Debian 12 Bookworm operating system is needed in order to deploy Signage Orchestrator (not tested on any Raspbian).
 System must be reachable by Raspberry Slideshow/Digital Signage players, so in the same network or correctly routed.
 
 For testing purposes, a VirtualBox virtual machine with bridged network is fine.

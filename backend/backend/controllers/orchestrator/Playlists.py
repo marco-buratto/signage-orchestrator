@@ -1,85 +1,42 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
 
 from backend.models.Playlist import Playlist
 
 from backend.serializers.Playlist import PlaylistSerializer
 from backend.serializers.Playlists import PlaylistsSerializer
 
-from backend.controllers.CustomController import CustomController
-from backend.helpers.Conditional import Conditional
-from backend.helpers.Log import Log
+from backend.controllers.CustomControllerItems import CustomControllerItems
 
 
-class PlaylistsController(CustomController):
-    @staticmethod
-    def get(request: Request) -> Response:
-        filter = "all"
-        if "filter" in request.GET:
-            f = request.GET.get("filter")
-            if "web" in f:
-                filter = "web"
-            if "slideshow" in f:
-                filter = "slideshow"
-
-        try:
-            Log.log("Playlists list")
-            data = {
-                "data": {
-                    "items": CustomController.validate(
-                        [r.repr() for r in Playlist.list(filter)],
-                        PlaylistsSerializer,
-                        "list"
-                    )
-                }
-            }
-
-            # Check the response's ETag validity (against client request).
-            conditional = Conditional(request)
-            etagCondition = conditional.responseEtagFreshnessAgainstRequest(data["data"])
-            if etagCondition["state"] == "fresh":
-                data = None
-                httpStatus = status.HTTP_304_NOT_MODIFIED
-            else:
-                httpStatus = status.HTTP_200_OK
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(data, status=httpStatus, headers={
-            "ETag": etagCondition["responseEtag"],
-            "Cache-Control": "must-revalidate"
-        })
+class PlaylistsController(CustomControllerItems):
+    def __init__(self, *args, **kwargs):
+        super().__init__(subject="playlist", *args, **kwargs)
 
 
 
-    @staticmethod
-    def post(request: Request) -> Response:
-        response = None
+    def get(self, request: Request) -> Response:
+        def actionCall():
+            what = "all"
+            if "filter" in request.GET:
+                f = request.GET.get("filter")
+                if "web" in f:
+                    what = "web"
+                if "slideshow" in f:
+                    what = "slideshow"
 
-        try:
-            Log.log("Playlist addition")
-            Log.log("User data: "+str(request.data))
+            return [
+                r.repr() for r in Playlist.list(
+                    filter=what
+                )
+            ]
 
-            serializer = PlaylistSerializer(data=request.data.get("data", {}))
-            if serializer.is_valid():
-                Playlist.add(serializer.validated_data)
+        return self.getList(request=request, actionCall=actionCall, serializer=PlaylistsSerializer)
 
-                httpStatus = status.HTTP_201_CREATED
-            else:
-                httpStatus = status.HTTP_400_BAD_REQUEST
-                response = {
-                    "Signage Orchestrator Backend": {
-                        "error": str(serializer.errors)
-                    }
-                }
 
-                Log.log("User data incorrect: "+str(response))
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
 
-        return Response(response, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+    def post(self, request: Request) -> Response:
+        def actionCall(**kwargs):
+            return Playlist.add(**kwargs)
+
+        return self.postItem(request=request, actionCall=actionCall, serializer=PlaylistSerializer)

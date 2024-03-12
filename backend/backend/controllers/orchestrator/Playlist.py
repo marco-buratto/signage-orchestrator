@@ -1,92 +1,37 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
 
 from backend.models.Playlist import Playlist
 
-from backend.serializers.Playlist import PlaylistSerializer as Serializer
+from backend.serializers.Playlist import PlaylistSerializer
 
-from backend.controllers.CustomController import CustomController
-from backend.helpers.Conditional import Conditional
-from backend.helpers.Log import Log
+from backend.controllers.CustomControllerItem import CustomControllerItem
 
 
-class PlaylistController(CustomController):
-    @staticmethod
-    def get(request: Request, playlistId: int) -> Response:
-        try:
-            Log.log("Playlist information")
-            data = {
-                "data": CustomController.validate(
-                    Playlist(id=playlistId).repr(),
-                    Serializer,
-                    "value"
-                )
-            }
-
-            # Check the response's ETag validity (against client request).
-            conditional = Conditional(request)
-            etagCondition = conditional.responseEtagFreshnessAgainstRequest(data["data"])
-            if etagCondition["state"] == "fresh":
-                data = None
-                httpStatus = status.HTTP_304_NOT_MODIFIED
-            else:
-                httpStatus = status.HTTP_200_OK
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(data, status=httpStatus, headers={
-            "ETag": etagCondition["responseEtag"],
-            "Cache-Control": "must-revalidate"
-        })
+class PlaylistController(CustomControllerItem):
+    def __init__(self, *args, **kwargs):
+        super().__init__(subject="playlist", *args, **kwargs)
 
 
 
-    @staticmethod
-    def delete(request: Request, playlistId: int) -> Response:
-        try:
-            Log.log("Playlist deletion")
+    def get(self, request: Request, playlistId: int) -> Response:
+        def actionCall(**kwargs):
+            return Playlist(id=kwargs.get("id")).repr()
 
-            Playlist(id=playlistId).delete()
-
-            httpStatus = status.HTTP_200_OK
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(None, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+        return self.getItem(request=request, actionCall=actionCall, objectId=playlistId, serializer=PlaylistSerializer)
 
 
 
-    @staticmethod
-    def patch(request: Request, playlistId: int) -> Response:
-        response = None
+    def patch(self, request: Request, playlistId: int) -> Response:
+        def actionCall(**kwargs):
+            return Playlist(id=kwargs.get("id")).modify(kwargs.get("data"))
 
-        try:
-            Log.log("Playlist modification")
-            Log.log("User data: "+str(request.data))
+        return self.patchItem(request=request, actionCall=actionCall, objectId=playlistId, serializer=PlaylistSerializer)
 
-            serializer = Serializer(data=request.data.get("data", {}), partial=True)
-            if serializer.is_valid():
-                Playlist(id=playlistId).modify(serializer.validated_data)
 
-                httpStatus = status.HTTP_200_OK
-            else:
-                httpStatus = status.HTTP_400_BAD_REQUEST
-                response = {
-                    "Signage Orchestrator Backend": {
-                        "error": str(serializer.errors)
-                    }
-                }
 
-                Log.log("User data incorrect: "+str(response))
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
+    def delete(self, request: Request, playlistId: int) -> Response:
+        def actionCall(**kwargs):
+            return Playlist(id=kwargs.get("id")).delete()
 
-        return Response(response, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+        return self.deleteItem(request=request, actionCall=actionCall, objectId=playlistId)

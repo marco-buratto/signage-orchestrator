@@ -55,7 +55,7 @@ class CustomControllerItem(CustomController):
         Log.log("User data: " + str(request.data))
 
         try:
-            s = serializer(data=request.data.get("data", {}))
+            s = serializer(data=request.data.get("data", {}), partial=True)
             if s.is_valid():
                 response = {
                     "data": actionCall(id=objectId, data=s.validated_data)

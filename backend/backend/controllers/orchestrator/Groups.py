@@ -12,7 +12,7 @@ from backend.controllers.CustomControllerPost import CustomControllerPost
 
 class GroupsController(CustomControllerList, CustomControllerPost):
     def __init__(self, *args, **kwargs):
-        super().__init__(subject="player", *args, **kwargs)
+        super().__init__(subject="group", *args, **kwargs)
 
 
 

@@ -1,96 +1,42 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
 
 from backend.models.Group import Group
 
-from backend.serializers.Group import GroupSerializer as Serializer
+from backend.serializers.Group import GroupSerializer
 
-from backend.controllers.CustomController import CustomController
-from backend.helpers.Conditional import Conditional
-from backend.helpers.Log import Log
+from backend.controllers.CustomControllerGet import CustomControllerGet
+from backend.controllers.CustomControllerPatch import CustomControllerPatch
+from backend.controllers.CustomControllerDelete import CustomControllerDelete
 
 
-class GroupController(CustomController):
-    @staticmethod
-    def get(request: Request, groupId: int) -> Response:
-        loadPlayers = False
-        if "loadPlayers" in request.GET:
-            loadPlayers = True
-
-        try:
-            Log.log("Group information")
-            data = {
-                "data": CustomController.validate(
-                    Group(id=groupId, loadPlayers=loadPlayers).repr(),
-                    Serializer,
-                    "value"
-                )
-            }
-
-            # Check the response's ETag validity (against client request).
-            conditional = Conditional(request)
-            etagCondition = conditional.responseEtagFreshnessAgainstRequest(data["data"])
-            if etagCondition["state"] == "fresh":
-                data = None
-                httpStatus = status.HTTP_304_NOT_MODIFIED
-            else:
-                httpStatus = status.HTTP_200_OK
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(data, status=httpStatus, headers={
-            "ETag": etagCondition["responseEtag"],
-            "Cache-Control": "must-revalidate"
-        })
+class GroupController(CustomControllerGet, CustomControllerPatch, CustomControllerDelete):
+    def __init__(self, *args, **kwargs):
+        super().__init__(subject="group", *args, **kwargs)
 
 
 
-    @staticmethod
-    def delete(request: Request, groupId: int) -> Response:
-        try:
-            Log.log("Group deletion")
+    def get(self, request: Request, groupId: int) -> Response:
+        def actionCall(**kwargs):
+            return Group(
+                id=kwargs.get("id"),
+                loadPlayers=bool("loadPlayers" in request.GET)
+            ).repr()
 
-            Group(id=groupId).delete()
-
-            httpStatus = status.HTTP_200_OK
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(None, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+        return self.getItem(request=request, actionCall=actionCall, objectId=groupId, serializer=GroupSerializer)
 
 
 
-    @staticmethod
-    def patch(request: Request, groupId: int) -> Response:
-        response = None
+    def patch(self, request: Request, groupId: int) -> Response:
+        def actionCall(**kwargs):
+            return Group(id=kwargs.get("id")).modify(kwargs.get("data"))
 
-        try:
-            Log.log("Group modification")
-            Log.log("User data: "+str(request.data))
+        return self.patchItem(request=request, actionCall=actionCall, objectId=groupId, serializer=GroupSerializer)
 
-            serializer = Serializer(data=request.data.get("data", {}), partial=True)
-            if serializer.is_valid():
-                Group(id=groupId).modify(serializer.validated_data)
 
-                httpStatus = status.HTTP_200_OK
-            else:
-                httpStatus = status.HTTP_400_BAD_REQUEST
-                response = {
-                    "Signage Orchestrator Backend": {
-                        "error": str(serializer.errors)
-                    }
-                }
 
-                Log.log("User data incorrect: "+str(response))
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
+    def delete(self, request: Request, groupId: int) -> Response:
+        def actionCall(**kwargs):
+            return Group(id=kwargs.get("id")).delete()
 
-        return Response(response, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+        return self.deleteItem(request=request, actionCall=actionCall, objectId=groupId)

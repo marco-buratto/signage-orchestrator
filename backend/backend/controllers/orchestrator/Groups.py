@@ -23,7 +23,7 @@ class GroupsController(CustomControllerItems):
                 )
             ]
 
-        return self.getList(request=request, actionCall=actionCall, serializer=GroupsSerializer)
+        return self.ls(request=request, actionCall=actionCall, serializer=GroupsSerializer)
 
 
 
@@ -31,4 +31,4 @@ class GroupsController(CustomControllerItems):
         def actionCall(**kwargs):
             return Group.add(**kwargs)
 
-        return self.postItem(request=request, actionCall=actionCall, serializer=GroupSerializer)
+        return self.add(request=request, actionCall=actionCall, serializer=GroupSerializer)

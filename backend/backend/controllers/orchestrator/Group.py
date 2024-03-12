@@ -21,7 +21,7 @@ class GroupController(CustomControllerItem):
                 loadPlayers=bool("loadPlayers" in request.GET)
             ).repr()
 
-        return self.getItem(request=request, actionCall=actionCall, objectId=groupId, serializer=GroupSerializer)
+        return self.info(request=request, actionCall=actionCall, objectId=groupId, serializer=GroupSerializer)
 
 
 
@@ -29,7 +29,7 @@ class GroupController(CustomControllerItem):
         def actionCall(**kwargs):
             return Group(id=kwargs.get("id")).modify(kwargs.get("data"))
 
-        return self.patchItem(request=request, actionCall=actionCall, objectId=groupId, serializer=GroupSerializer)
+        return self.modify(request=request, actionCall=actionCall, objectId=groupId, serializer=GroupSerializer)
 
 
 
@@ -37,4 +37,4 @@ class GroupController(CustomControllerItem):
         def actionCall(**kwargs):
             return Group(id=kwargs.get("id")).delete()
 
-        return self.deleteItem(request=request, actionCall=actionCall, objectId=groupId)
+        return self.remove(request=request, actionCall=actionCall, objectId=groupId)

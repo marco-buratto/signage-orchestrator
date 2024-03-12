@@ -1,43 +1,23 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
 
 from backend.models.Group import Group
 
-from backend.serializers.GroupPlayer import GroupPlayerSerializer as Serializer
+from backend.serializers.GroupPlayer import GroupPlayerSerializer
 
-from backend.controllers.CustomController import CustomController
-from backend.helpers.Log import Log
+from backend.controllers.CustomControllerItems import CustomControllerItems
 
 
-class GroupPlayersController(CustomController):
-    @staticmethod
-    def post(request: Request, groupId: int) -> Response:
-        response = None
+class GroupPlayersController(CustomControllerItems):
+    def __init__(self, *args, **kwargs):
+        super().__init__(subject="group", linkedSubject="player", *args, **kwargs)
 
-        try:
-            Log.log("Player linking to group")
-            Log.log("User data: "+str(request.data))
 
-            serializer = Serializer(data=request.data.get("data", {}))
-            if serializer.is_valid():
-                userdata = serializer.validated_data
-                Group(id=groupId).linkPlayer(userdata["player"]["id"])
 
-                httpStatus = status.HTTP_201_CREATED
-            else:
-                httpStatus = status.HTTP_400_BAD_REQUEST
-                response = {
-                    "Signage Orchestrator Backend": {
-                        "error": str(serializer.errors)
-                    }
-                }
+    def post(self, request: Request, groupId: int) -> Response:
+        def actionCall(**kwargs):
+            return Group(id=kwargs.get("id")).linkPlayer(
+                kwargs["data"]["player"]["id"]
+            )
 
-                Log.log("User data incorrect: "+str(response))
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(response, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+        return self.link(request=request, actionCall=actionCall, objectId=groupId, serializer=GroupPlayerSerializer)

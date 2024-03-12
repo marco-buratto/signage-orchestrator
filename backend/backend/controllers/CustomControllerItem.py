@@ -16,7 +16,7 @@ class CustomControllerItem(CustomController):
 
 
 
-    def getItem(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
+    def info(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
         serializer = serializer or None
         Log.log(f"Information for {self.subject.capitalize()}")
 
@@ -48,7 +48,7 @@ class CustomControllerItem(CustomController):
 
 
 
-    def patchItem(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
+    def modify(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
         serializer = serializer or None
 
         Log.log(f"{self.subject.capitalize()} modification")
@@ -84,7 +84,7 @@ class CustomControllerItem(CustomController):
 
 
 
-    def deleteItem(self, request: Request, actionCall: Callable, objectId: int) -> Response:
+    def remove(self, request: Request, actionCall: Callable, objectId: int) -> Response:
         Log.log(f"{self.subject.capitalize()} deletion")
 
         try:

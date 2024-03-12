@@ -31,7 +31,7 @@ class PlaylistsController(CustomControllerItems):
                 )
             ]
 
-        return self.getList(request=request, actionCall=actionCall, serializer=PlaylistsSerializer)
+        return self.ls(request=request, actionCall=actionCall, serializer=PlaylistsSerializer)
 
 
 
@@ -39,4 +39,4 @@ class PlaylistsController(CustomControllerItems):
         def actionCall(**kwargs):
             return Playlist.add(**kwargs)
 
-        return self.postItem(request=request, actionCall=actionCall, serializer=PlaylistSerializer)
+        return self.add(request=request, actionCall=actionCall, serializer=PlaylistSerializer)

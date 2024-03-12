@@ -21,4 +21,4 @@ class PlayerController(CustomControllerItem):
                 loadGroup=bool("loadGroup" in request.GET)
             ).repr()
 
-        return self.getItem(request=request, actionCall=actionCall, objectId=playerId, serializer=PlayerSerializer)
+        return self.info(request=request, actionCall=actionCall, objectId=playerId, serializer=PlayerSerializer)

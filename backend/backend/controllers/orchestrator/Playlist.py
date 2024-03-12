@@ -18,7 +18,7 @@ class PlaylistController(CustomControllerItem):
         def actionCall(**kwargs):
             return Playlist(id=kwargs.get("id")).repr()
 
-        return self.getItem(request=request, actionCall=actionCall, objectId=playlistId, serializer=PlaylistSerializer)
+        return self.info(request=request, actionCall=actionCall, objectId=playlistId, serializer=PlaylistSerializer)
 
 
 
@@ -26,7 +26,7 @@ class PlaylistController(CustomControllerItem):
         def actionCall(**kwargs):
             return Playlist(id=kwargs.get("id")).modify(kwargs.get("data"))
 
-        return self.patchItem(request=request, actionCall=actionCall, objectId=playlistId, serializer=PlaylistSerializer)
+        return self.modify(request=request, actionCall=actionCall, objectId=playlistId, serializer=PlaylistSerializer)
 
 
 
@@ -34,4 +34,4 @@ class PlaylistController(CustomControllerItem):
         def actionCall(**kwargs):
             return Playlist(id=kwargs.get("id")).delete()
 
-        return self.deleteItem(request=request, actionCall=actionCall, objectId=playlistId)
+        return self.remove(request=request, actionCall=actionCall, objectId=playlistId)

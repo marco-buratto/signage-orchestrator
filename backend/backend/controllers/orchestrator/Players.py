@@ -24,7 +24,7 @@ class PlayersController(CustomControllerItems):
                 )
             ]
 
-        return self.getList(request=request, actionCall=actionCall, serializer=PlayersSerializer)
+        return self.ls(request=request, actionCall=actionCall, serializer=PlayersSerializer)
 
 
 
@@ -34,7 +34,7 @@ class PlayersController(CustomControllerItems):
 
         # Always return Orchestrator SSH public key.
         # Yes, dirty and unrelated, but it avoids many players' connections.
-        r = self.postItem(request=request, actionCall=actionCall, serializer=PlayerSerializer)
+        r = self.add(request=request, actionCall=actionCall, serializer=PlayerSerializer)
         r.data = {
             "data": {
                 "orchestrator_ssh_public_key": Cryptography.getPublicSshKey()

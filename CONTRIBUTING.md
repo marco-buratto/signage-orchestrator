@@ -10,12 +10,6 @@ In development, two Vagrant virtual machines are used, one for each node, backen
 - Vagrant and VirtualBox are needed.
 - Vagrant:
 
-      # Using the Vagrant build maintained by the distribution.
-      sudo apt update
-      sudo apt install -y vagrant
-
-      OR
-
       # Using Vagrant repos. 
       wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/vagrant-archive-keyring.gpg
       sudo echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list

@@ -7,20 +7,20 @@ from backend.helpers.Log import Log
 
 class CustomController(APIView):
     @staticmethod
-    def validate(data, Serializer, validationType: str):
+    def validate(data, serializer, validationType: str):
         cleanData = None
         mismatch = False
 
         try:
-            if Serializer:
+            if serializer:
                 if validationType == "value":
-                    serializer = Serializer(data=data)
+                    serializer = serializer(data=data)
                     if serializer.is_valid():
                         cleanData = serializer.validated_data
                     else:
                         mismatch = True
                 elif validationType == "list":
-                    serializer = Serializer(data={"items": data}) # serializer needs an "items" key.
+                    serializer = serializer(data={"items": data}) # serializer needs an "items" key.
                     if serializer.is_valid():
                         cleanData = serializer.validated_data["items"]
                     else:

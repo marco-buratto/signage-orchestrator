@@ -1,6 +1,8 @@
 from django.urls import path
 
-from backend.controllers import Root, Player, Players, Group, Groups, GroupPlayer, GroupPlayers, Playlist, Playlists, Event, Events, EventGroups, EventPlaylist, EventPlaylists
+from backend.controllers import Root
+from backend.controllers.orchestrator import Group, EventGroups, Playlist, Playlists, Players, Event, EventPlaylist, \
+    Groups, GroupPlayers, Player, Events, GroupPlayer, EventPlaylists
 
 urlpatterns = [
     path('', Root.RootController.as_view()),

@@ -1,26 +1,19 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
 
 from backend.models.Group import Group
 
-from backend.controllers.CustomController import CustomController
-from backend.helpers.Log import Log
+from backend.controllers.CustomControllerItem import CustomControllerItem
 
 
-class GroupPlayerController(CustomController):
-    @staticmethod
-    def delete(request: Request, groupId: int, playerId: int) -> Response:
-        try:
-            Log.log("Player unlinking from group")
+class GroupPlayerController(CustomControllerItem):
+    def __init__(self, *args, **kwargs):
+        super().__init__(subject="group", linkedSubject="player", *args, **kwargs)
 
-            Group(id=groupId).unlinkPlayer(playerId)
 
-            httpStatus = status.HTTP_200_OK
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
 
-        return Response(None, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+    def delete(self, request: Request, groupId: int, playerId: int) -> Response:
+        def actionCall(**kwargs):
+            return Group(id=kwargs.get("id")).unlinkPlayer(kwargs.get("linkedId"))
+
+        return self.unlink(request=request, actionCall=actionCall, objectId=groupId, linkedObjectId=playerId)

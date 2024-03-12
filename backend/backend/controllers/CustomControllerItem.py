@@ -11,8 +11,9 @@ from backend.helpers.Log import Log
 
 
 class CustomControllerItem(CustomController):
-    def __init__(self, subject: str, *args, **kwargs):
+    def __init__(self, subject: str, linkedSubject: str = "", *args, **kwargs):
         self.subject = subject
+        self.linkedSubject = linkedSubject
 
 
 
@@ -90,6 +91,31 @@ class CustomControllerItem(CustomController):
         try:
             response = {
                 "data": actionCall(id=objectId)
+            }
+
+            if not response["data"]:
+                response = None # no payload on empty returns.
+
+            httpStatus = status.HTTP_200_OK
+        except Exception as e:
+            data, httpStatus, headers = CustomController.exceptionHandler(e)
+            return Response(data, status=httpStatus, headers=headers)
+
+        return Response(response, status=httpStatus, headers={
+            "Cache-Control": "no-cache"
+        })
+
+
+
+    def unlink(self, request: Request, actionCall: Callable, objectId: int, linkedObjectId: int) -> Response:
+        Log.log(f"Unlink {self.linkedSubject.capitalize()} from {self.subject.capitalize()}")
+
+        try:
+            response = {
+                "data": actionCall(
+                    id=objectId,
+                    linkedId=linkedObjectId
+                )
             }
 
             if not response["data"]:

@@ -5,12 +5,10 @@ from backend.models.Group import Group
 
 from backend.serializers.Group import GroupSerializer
 
-from backend.controllers.CustomControllerGet import CustomControllerGet
-from backend.controllers.CustomControllerPatch import CustomControllerPatch
-from backend.controllers.CustomControllerDelete import CustomControllerDelete
+from backend.controllers.CustomControllerItem import CustomControllerItem
 
 
-class GroupController(CustomControllerGet, CustomControllerPatch, CustomControllerDelete):
+class GroupController(CustomControllerItem):
     def __init__(self, *args, **kwargs):
         super().__init__(subject="group", *args, **kwargs)
 

@@ -5,10 +5,10 @@ from backend.models.Group import Group
 
 from backend.serializers.Group import GroupSerializer
 
-from backend.controllers.CustomControllerItem import CustomControllerItem
+from backend.controllers.CustomController import CustomController
 
 
-class GroupController(CustomControllerItem):
+class GroupController(CustomController):
     def __init__(self, *args, **kwargs):
         super().__init__(subject="group", *args, **kwargs)
 

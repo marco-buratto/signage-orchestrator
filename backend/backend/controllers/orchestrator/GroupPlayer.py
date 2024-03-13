@@ -3,10 +3,10 @@ from rest_framework.response import Response
 
 from backend.models.Group import Group
 
-from backend.controllers.CustomControllerItem import CustomControllerItem
+from backend.controllers.CustomController import CustomController
 
 
-class GroupPlayerController(CustomControllerItem):
+class GroupPlayerController(CustomController):
     def __init__(self, *args, **kwargs):
         super().__init__(subject="group", linkedSubject="player", *args, **kwargs)
 

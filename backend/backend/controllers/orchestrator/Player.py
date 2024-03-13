@@ -5,10 +5,10 @@ from backend.models.Player import Player
 
 from backend.serializers.Player import PlayerSerializer
 
-from backend.controllers.CustomControllerItem import CustomControllerItem
+from backend.controllers.CustomController import CustomController
 
 
-class PlayerController(CustomControllerItem):
+class PlayerController(CustomController):
     def __init__(self, *args, **kwargs):
         super().__init__(subject="player", *args, **kwargs)
 

@@ -5,10 +5,10 @@ from backend.models.Event import Event
 
 from backend.serializers.Event import EventSerializer
 
-from backend.controllers.CustomControllerItem import CustomControllerItem
+from backend.controllers.CustomController import CustomController
 
 
-class EventController(CustomControllerItem):
+class EventController(CustomController):
     def __init__(self, *args, **kwargs):
         super().__init__(subject="event", *args, **kwargs)
 

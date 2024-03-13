@@ -4,11 +4,11 @@ from rest_framework import status
 
 from backend.models.Event import Event
 
-from backend.controllers.CustomController import CustomController
+from backend.controllers.CustomControllerBase import CustomControllerBase
 from backend.helpers.Log import Log
 
 
-class EventPlaylistController(CustomController):
+class EventPlaylistController(CustomControllerBase):
     @staticmethod
     def delete(request: Request, eventId: int, playlistId: int) -> Response:
         try:
@@ -18,7 +18,7 @@ class EventPlaylistController(CustomController):
 
             httpStatus = status.HTTP_200_OK
         except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
             return Response(data, status=httpStatus, headers=headers)
 
         return Response(None, status=httpStatus, headers={

@@ -6,11 +6,11 @@ from backend.models.Event import Event
 
 from backend.serializers.EventGroup import EventGroupsSerializer as Serializer
 
-from backend.controllers.CustomController import CustomController
+from backend.controllers.CustomControllerBase import CustomControllerBase
 from backend.helpers.Log import Log
 
 
-class EventGroupsController(CustomController):
+class EventGroupsController(CustomControllerBase):
     @staticmethod
     def post(request: Request, eventId: int) -> Response:
         response = None
@@ -35,7 +35,7 @@ class EventGroupsController(CustomController):
 
                 Log.log("User data incorrect: "+str(response))
         except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
             return Response(data, status=httpStatus, headers=headers)
 
         return Response(response, status=httpStatus, headers={

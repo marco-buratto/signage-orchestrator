@@ -5,10 +5,10 @@ from backend.models.Playlist import Playlist
 
 from backend.serializers.Playlist import PlaylistSerializer
 
-from backend.controllers.CustomControllerItem import CustomControllerItem
+from backend.controllers.CustomController import CustomController
 
 
-class PlaylistController(CustomControllerItem):
+class PlaylistController(CustomController):
     def __init__(self, *args, **kwargs):
         super().__init__(subject="playlist", *args, **kwargs)
 

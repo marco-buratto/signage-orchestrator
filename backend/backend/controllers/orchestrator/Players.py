@@ -6,11 +6,11 @@ from backend.models.Player import Player
 from backend.serializers.Player import PlayerSerializer
 from backend.serializers.Players import PlayersSerializer
 
-from backend.controllers.CustomControllerItems import CustomControllerItems
+from backend.controllers.CustomController import CustomController
 from backend.helpers.Cryptography import Cryptography
 
 
-class PlayersController(CustomControllerItems):
+class PlayersController(CustomController):
     def __init__(self, *args, **kwargs):
         super().__init__(subject="player", *args, **kwargs)
 

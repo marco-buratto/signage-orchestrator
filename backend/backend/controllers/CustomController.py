@@ -1,71 +1,234 @@
-from rest_framework.views import APIView
+from typing import Callable
+
+from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework import status
 
-from backend.helpers.Exception import CustomException
+from backend.controllers.CustomControllerBase import CustomControllerBase
+
+from backend.helpers.Conditional import Conditional
 from backend.helpers.Log import Log
 
 
-class CustomController(APIView):
-    @staticmethod
-    def validate(data, serializer, validationType: str):
-        cleanData = None
-        mismatch = False
+class CustomController(CustomControllerBase):
+    def __init__(self, subject: str, linkedSubject: str = "", *args, **kwargs):
+        self.subject = subject
+        self.linkedSubject = linkedSubject
+
+
+
+    def info(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
+        serializer = serializer or None
+        Log.log(f"Information for {self.subject.capitalize()}")
 
         try:
-            if serializer:
-                if validationType == "value":
-                    serializer = serializer(data=data)
-                    if serializer.is_valid():
-                        cleanData = serializer.validated_data
-                    else:
-                        mismatch = True
-                elif validationType == "list":
-                    serializer = serializer(data={"items": data}) # serializer needs an "items" key.
-                    if serializer.is_valid():
-                        cleanData = serializer.validated_data["items"]
-                    else:
-                        mismatch = True
-                else:
-                    raise NotImplemented
-
-                if mismatch:
-                    Log.log("Upstream data incorrect: " + str(serializer.errors))
-                    raise CustomException(
-                        status=500,
-                        payload={"Signage Orchestrator Backend": "Upstream data mismatch."}
-                    )
-                else:
-                    return cleanData
-            else:
-                return data
-        except Exception as e:
-            raise e
-
-
-
-    @staticmethod
-    def exceptionHandler(e: Exception) -> tuple:
-        Log.logException(e)
-
-        data = dict()
-        headers = { "Cache-Control": "no-cache" }
-
-        if e.__class__.__name__ in ("ConnectionError", "Timeout", "ConnectTimeout", "TooManyRedirects", "SSLError", "HTTPError"):
-            httpStatus = status.HTTP_503_SERVICE_UNAVAILABLE
-            data["error"] = {
-                "network": e.__str__()
+            data = {
+                "data": CustomControllerBase.validate(
+                    actionCall(id=objectId),
+                    serializer,
+                    "value"
+                )
             }
-        elif e.__class__.__name__ == "CustomException":
-            httpStatus = e.status
-            if e.payload:
-                data["error"] = e.payload
-            else:
-                data = None
-        elif e.__class__.__name__ == "ParseError":
-            data = None
-            httpStatus = status.HTTP_400_BAD_REQUEST # json parse.
-        else:
-            data = None
-            httpStatus = status.HTTP_500_INTERNAL_SERVER_ERROR # generic.
 
-        return data, httpStatus, headers
+            # Check the response's ETag validity (against client request).
+            conditional = Conditional(request)
+            etagCondition = conditional.responseEtagFreshnessAgainstRequest(data["data"])
+            if etagCondition["state"] == "fresh":
+                data = None
+                httpStatus = status.HTTP_304_NOT_MODIFIED
+            else:
+                httpStatus = status.HTTP_200_OK
+        except Exception as e:
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
+            return Response(data, status=httpStatus, headers=headers)
+
+        return Response(data, status=httpStatus, headers={
+            "ETag": etagCondition["responseEtag"],
+            "Cache-Control": "must-revalidate"
+        })
+
+
+
+    def modify(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
+        serializer = serializer or None
+
+        Log.log(f"{self.subject.capitalize()} modification")
+        Log.log("User data: " + str(request.data))
+
+        try:
+            s = serializer(data=request.data.get("data", {}), partial=True)
+            if s.is_valid():
+                response = {
+                    "data": actionCall(id=objectId, data=s.validated_data)
+                }
+
+                if not response["data"]:
+                    response = None # no payload on empty returns.
+
+                httpStatus = status.HTTP_200_OK
+            else:
+                httpStatus = status.HTTP_400_BAD_REQUEST
+                response = {
+                    "Signage Orchestrator Backend": {
+                        "error": str(s.errors)
+                    }
+                }
+
+                Log.log("User data incorrect: "+str(response))
+        except Exception as e:
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
+            return Response(data, status=httpStatus, headers=headers)
+
+        return Response(response, status=httpStatus, headers={
+            "Cache-Control": "no-cache"
+        })
+
+
+
+    def remove(self, request: Request, actionCall: Callable, objectId: int) -> Response:
+        Log.log(f"{self.subject.capitalize()} deletion")
+
+        try:
+            response = {
+                "data": actionCall(id=objectId)
+            }
+
+            if not response["data"]:
+                response = None # no payload on empty returns.
+
+            httpStatus = status.HTTP_200_OK
+        except Exception as e:
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
+            return Response(data, status=httpStatus, headers=headers)
+
+        return Response(response, status=httpStatus, headers={
+            "Cache-Control": "no-cache"
+        })
+
+
+
+    def unlink(self, request: Request, actionCall: Callable, objectId: int, linkedObjectId: int) -> Response:
+        Log.log(f"Unlink {self.linkedSubject.capitalize()} from {self.subject.capitalize()}")
+
+        try:
+            response = {
+                "data": actionCall(
+                    id=objectId,
+                    linkedId=linkedObjectId
+                )
+            }
+
+            if not response["data"]:
+                response = None # no payload on empty returns.
+
+            httpStatus = status.HTTP_200_OK
+        except Exception as e:
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
+            return Response(data, status=httpStatus, headers=headers)
+
+        return Response(response, status=httpStatus, headers={
+            "Cache-Control": "no-cache"
+        })
+
+
+
+    def ls(self, request: Request, actionCall: Callable, serializer: Callable = None) -> Response:
+        serializer = serializer or None
+        Log.log(f"List of {self.subject.capitalize()}")
+
+        try:
+            data = {
+                "data": {
+                    "items": CustomControllerBase.validate(actionCall(), serializer, "list")
+                }
+            }
+
+            # Check the response's ETag validity (against client request).
+            conditional = Conditional(request)
+            etagCondition = conditional.responseEtagFreshnessAgainstRequest(data["data"])
+            if etagCondition["state"] == "fresh":
+                data = None
+                httpStatus = status.HTTP_304_NOT_MODIFIED
+            else:
+                httpStatus = status.HTTP_200_OK
+        except Exception as e:
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
+            return Response(data, status=httpStatus, headers=headers)
+
+        return Response(data, status=httpStatus, headers={
+            "ETag": etagCondition["responseEtag"],
+            "Cache-Control": "must-revalidate"
+        })
+
+
+
+    def add(self, request: Request, actionCall: Callable, serializer: Callable = None) -> Response:
+        serializer = serializer or None
+
+        Log.log(f"{self.subject.capitalize()} addition")
+        Log.log("User data: " + str(request.data))
+
+        try:
+            s = serializer(data=request.data.get("data", {}))
+            if s.is_valid():
+                response = {
+                    "data": actionCall(data=s.validated_data)
+                }
+
+                if not response["data"]:
+                    response = None # no payload on empty returns.
+
+                httpStatus = status.HTTP_201_CREATED
+            else:
+                httpStatus = status.HTTP_400_BAD_REQUEST
+                response = {
+                    "Signage Orchestrator Backend": {
+                        "error": str(s.errors)
+                    }
+                }
+
+                Log.log("User data incorrect: "+str(response))
+        except Exception as e:
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
+            return Response(data, status=httpStatus, headers=headers)
+
+        return Response(response, status=httpStatus, headers={
+            "Cache-Control": "no-cache"
+        })
+
+
+
+    def link(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
+        serializer = serializer or None
+        Log.log(f"Link {self.linkedSubject.capitalize()} to {self.subject.capitalize()}")
+
+        try:
+            s = serializer(data=request.data.get("data", {}))
+            if s.is_valid():
+                response = {
+                    "data": actionCall(
+                        id=objectId,
+                        data=s.validated_data
+                    )
+                }
+
+                if not response["data"]:
+                    response = None # no payload on empty returns.
+
+                httpStatus = status.HTTP_201_CREATED
+            else:
+                httpStatus = status.HTTP_400_BAD_REQUEST
+                response = {
+                    "Signage Orchestrator Backend": {
+                        "error": str(s.errors)
+                    }
+                }
+
+                Log.log("User data incorrect: "+str(response))
+        except Exception as e:
+            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
+            return Response(data, status=httpStatus, headers=headers)
+
+        return Response(response, status=httpStatus, headers={
+            "Cache-Control": "no-cache"
+        })

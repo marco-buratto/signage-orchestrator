@@ -198,7 +198,7 @@ class CustomController(CustomControllerBase):
 
 
 
-    def link(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
+    def link(self, request: Request, actionCall: Callable, objectId: int, linkedObjectId: int, serializer: Callable = None) -> Response:
         serializer = serializer or None
         Log.clog(f"Link {self.linkedSubject.capitalize()} to {self.subject.capitalize()}")
 
@@ -208,7 +208,7 @@ class CustomController(CustomControllerBase):
                 response = {
                     "data": actionCall(
                         id=objectId,
-                        data=s.validated_data
+                        linkedObjectId=linkedObjectId
                     )
                 }
 

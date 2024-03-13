@@ -16,8 +16,12 @@ class GroupPlayersController(CustomController):
 
     def post(self, request: Request, groupId: int) -> Response:
         def actionCall(**kwargs):
-            return Group(id=kwargs.get("id")).linkPlayer(
-                kwargs["data"]["player"]["id"]
-            )
+            return Group(id=kwargs.get("id")).linkPlayer(kwargs["linkedObjectId"])
 
-        return self.link(request=request, actionCall=actionCall, objectId=groupId, serializer=GroupPlayerSerializer)
+        return self.link(
+            request=request,
+            actionCall=actionCall,
+            objectId=groupId,
+            linkedObjectId=request.data.get("data", {}).get("player", {}).get("id", 0),
+            serializer=GroupPlayerSerializer
+        )

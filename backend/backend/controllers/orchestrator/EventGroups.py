@@ -16,8 +16,12 @@ class EventGroupsController(CustomController):
 
     def post(self, request: Request, eventId: int) -> Response:
         def actionCall(**kwargs):
-            return Event(id=kwargs.get("id")).linkToGroup(
-                kwargs["data"]["group"]["id"]
-            )
+            return Event(id=kwargs.get("id")).linkToGroup(kwargs["linkedObjectId"])
 
-        return self.link(request=request, actionCall=actionCall, objectId=eventId, serializer=EventGroupsSerializer)
+        return self.link(
+            request=request,
+            actionCall=actionCall,
+            objectId=eventId,
+            linkedObjectId=request.data.get("data", {}).get("group", {}).get("id", 0),
+            serializer=EventGroupsSerializer
+        )

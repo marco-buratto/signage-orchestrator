@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "06f4e234-6f5f-4658-b4f0-86c15792c8ef",
+		"_postman_id": "98924634-58c8-4913-beac-06a255e4c729",
 		"name": "SignageOrchestrator",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -639,6 +639,44 @@
 										{
 											"key": "loadGroup",
 											"value": "true,"
+										},
+										{
+											"key": "loadPlaylist",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "events (all)",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://10.0.120.100/api/v1/backend/events/?loadGroup=true&loadPlaylist=true",
+									"protocol": "http",
+									"host": [
+										"10",
+										"0",
+										"120",
+										"100"
+									],
+									"path": [
+										"api",
+										"v1",
+										"backend",
+										"events",
+										""
+									],
+									"query": [
+										{
+											"key": "loadGroup",
+											"value": "true"
 										},
 										{
 											"key": "loadPlaylist",

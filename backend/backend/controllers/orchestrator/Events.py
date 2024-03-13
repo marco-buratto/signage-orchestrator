@@ -1,106 +1,56 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
 
 from backend.models.Event import Event
 
 from backend.serializers.Event import EventSerializer
 from backend.serializers.Events import EventsSerializer
 
-from backend.controllers.CustomController import CustomController
-from backend.helpers.Conditional import Conditional
-from backend.helpers.Log import Log
+from backend.controllers.CustomControllerItems import CustomControllerItems
 
 
-class EventsController(CustomController):
-    @staticmethod
-    def get(request: Request) -> Response:
+class EventsController(CustomControllerItems):
+    def __init__(self, *args, **kwargs):
+        super().__init__(subject="event", *args, **kwargs)
+
+
+
+    def get(self, request: Request) -> Response:
         eventsCount = 0
-        events = []
-        groupId = 0
-        if "group_id" in request.GET:
-            groupId = int(request.GET.get("group_id"))
 
-        startDate = endDate = ""
-        if "start_date" in request.GET:
-            startDate = request.GET.get("start_date")
-        if "end_date" in request.GET:
-            endDate = request.GET.get("end_date")
-
-        loadGroup = False
-        if "loadGroup" in request.GET:
-            loadGroup = True
-
-        loadPlaylist = False
-        if "loadPlaylist" in request.GET:
-            loadPlaylist = True
-
-        try:
-            Log.log("Events list")
+        def actionCall():
+            events = []
             for ev in Event.list(
-                    groupId=groupId, startDate=startDate, endDate=endDate,
-                    loadGroup=loadGroup, loadGroupPlayers=loadGroup, loadPlaylist=loadPlaylist
+                groupId=int(request.GET.get("group_id", 0)),
+                startDate=request.GET.get("start_date", ""),
+                endDate=request.GET.get("end_date", ""),
+                loadGroup=bool("loadGroup" in request.GET),
+                loadGroupPlayers=bool("loadGroup" in request.GET),
+                loadPlaylist=bool("loadPlaylist" in request.GET)
             ):
                 events.append(ev.repr())
-                eventsCount += 1
 
-            validatedEvents = CustomController.validate(events, EventsSerializer, "list")
-            for vev in validatedEvents:
-                if "group" in vev:
-                    vev["group"]["players_count"] = len(vev["group"].get("players", [])) # add addresses count.
+            return events
 
-            data = {
-                "data": {
-                    "count": eventsCount,
-                    "items": validatedEvents
-                }
-            }
+        r: Response = self.ls(request=request, actionCall=actionCall, serializer=EventsSerializer)
 
-            # Check the response's ETag validity (against client request).
-            conditional = Conditional(request)
-            etagCondition = conditional.responseEtagFreshnessAgainstRequest(data["data"])
-            if etagCondition["state"] == "fresh":
-                data = None
-                httpStatus = status.HTTP_304_NOT_MODIFIED
-            else:
-                httpStatus = status.HTTP_200_OK
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
+        # Add events' count and players' count for each group
+        # (information needed by the consumer).
+        for item in r.data["data"].get("items", []):
+            eventsCount += 1
+            if "group" in item:
+                item["group"]["players_count"] = len(item["group"].get("players", []))
 
-        return Response(data, status=httpStatus, headers={
-            "ETag": etagCondition["responseEtag"],
-            "Cache-Control": "must-revalidate"
+        r.data["data"].update({
+            "count": eventsCount,
         })
 
+        return r
 
 
-    @staticmethod
-    def post(request: Request) -> Response:
-        response = None
 
-        try:
-            Log.log("Event addition")
-            Log.log("User data: "+str(request.data))
+    def post(self, request: Request) -> Response:
+        def actionCall(**kwargs):
+            return Event.add(**kwargs)
 
-            serializer = EventSerializer(data=request.data.get("data", {}))
-            if serializer.is_valid():
-                Event.add(serializer.validated_data)
-
-                httpStatus = status.HTTP_201_CREATED
-            else:
-                httpStatus = status.HTTP_400_BAD_REQUEST
-                response = {
-                    "Signage Orchestrator Backend": {
-                        "error": str(serializer.errors)
-                    }
-                }
-
-                Log.log("User data incorrect: "+str(response))
-        except Exception as e:
-            data, httpStatus, headers = CustomController.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(response, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+        return self.add(request=request, actionCall=actionCall, serializer=EventSerializer)

@@ -17,17 +17,17 @@ class PlaylistsController(CustomControllerItems):
 
     def get(self, request: Request) -> Response:
         def actionCall():
-            what = "all"
+            show = "all"
             if "filter" in request.GET:
                 f = request.GET.get("filter")
                 if "web" in f:
-                    what = "web"
+                    show = "web"
                 if "slideshow" in f:
-                    what = "slideshow"
+                    show = "slideshow"
 
             return [
                 r.repr() for r in Playlist.list(
-                    filter=what
+                    filter=show
                 )
             ]
 

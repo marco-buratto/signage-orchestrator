@@ -6,11 +6,10 @@ import traceback
 class Log:
     @staticmethod
     def log(o: any, title: str = "") -> None:
-        # Sends input logs to the configured logger (settings).
         log = logging.getLogger("django")
         if title:
             if "_" in title:
-                for j in range(80):
+                for j in range(79):
                     title = title + "_"
             log.debug(title)
 
@@ -27,6 +26,12 @@ class Log:
             for j in range(80):
                 title = title + "_"
             log.debug(title)
+
+
+
+    @staticmethod
+    def clog(o: any) -> None:
+        Log.log(o, "_")
 
 
 

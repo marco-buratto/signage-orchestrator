@@ -19,7 +19,7 @@ class CustomController(CustomControllerBase):
 
     def info(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
         serializer = serializer or None
-        Log.log(f"Information for {self.subject.capitalize()}")
+        Log.clog(f"Information for {self.subject.capitalize()}")
 
         try:
             data = {
@@ -52,7 +52,7 @@ class CustomController(CustomControllerBase):
     def modify(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
         serializer = serializer or None
 
-        Log.log(f"{self.subject.capitalize()} modification")
+        Log.clog(f"{self.subject.capitalize()} modification")
         Log.log("User data: " + str(request.data))
 
         try:
@@ -86,7 +86,7 @@ class CustomController(CustomControllerBase):
 
 
     def remove(self, request: Request, actionCall: Callable, objectId: int) -> Response:
-        Log.log(f"{self.subject.capitalize()} deletion")
+        Log.clog(f"{self.subject.capitalize()} deletion")
 
         try:
             response = {
@@ -108,7 +108,7 @@ class CustomController(CustomControllerBase):
 
 
     def unlink(self, request: Request, actionCall: Callable, objectId: int, linkedObjectId: int) -> Response:
-        Log.log(f"Unlink {self.linkedSubject.capitalize()} from {self.subject.capitalize()}")
+        Log.clog(f"Unlink {self.linkedSubject.capitalize()} from {self.subject.capitalize()}")
 
         try:
             response = {
@@ -134,7 +134,7 @@ class CustomController(CustomControllerBase):
 
     def ls(self, request: Request, actionCall: Callable, serializer: Callable = None) -> Response:
         serializer = serializer or None
-        Log.log(f"List of {self.subject.capitalize()}")
+        Log.clog(f"List of {self.subject.capitalize()}")
 
         try:
             data = {
@@ -165,7 +165,7 @@ class CustomController(CustomControllerBase):
     def add(self, request: Request, actionCall: Callable, serializer: Callable = None) -> Response:
         serializer = serializer or None
 
-        Log.log(f"{self.subject.capitalize()} addition")
+        Log.clog(f"{self.subject.capitalize()} addition")
         Log.log("User data: " + str(request.data))
 
         try:
@@ -200,7 +200,7 @@ class CustomController(CustomControllerBase):
 
     def link(self, request: Request, actionCall: Callable, objectId: int, serializer: Callable = None) -> Response:
         serializer = serializer or None
-        Log.log(f"Link {self.linkedSubject.capitalize()} to {self.subject.capitalize()}")
+        Log.clog(f"Link {self.linkedSubject.capitalize()} to {self.subject.capitalize()}")
 
         try:
             s = serializer(data=request.data.get("data", {}))

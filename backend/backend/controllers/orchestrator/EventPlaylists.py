@@ -1,43 +1,23 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
 
 from backend.models.Event import Event
 
-from backend.serializers.EventPlaylist import EventPlaylistsSerializer as Serializer
+from backend.serializers.EventPlaylist import EventPlaylistsSerializer
 
-from backend.controllers.CustomControllerBase import CustomControllerBase
-from backend.helpers.Log import Log
+from backend.controllers.CustomController import CustomController
 
 
-class EventPlaylistsController(CustomControllerBase):
-    @staticmethod
-    def post(request: Request, eventId: int) -> Response:
-        response = None
+class EventPlaylistsController(CustomController):
+    def __init__(self, *args, **kwargs):
+        super().__init__(subject="playlist", linkedSubject="event", *args, **kwargs)
 
-        try:
-            Log.log("Event linking to playlist")
-            Log.log("User data: "+str(request.data))
 
-            serializer = Serializer(data=request.data.get("data", {}))
-            if serializer.is_valid():
-                userdata = serializer.validated_data
-                Event(id=eventId).linkToPlaylist(userdata["playlist"]["id"])
 
-                httpStatus = status.HTTP_201_CREATED
-            else:
-                httpStatus = status.HTTP_400_BAD_REQUEST
-                response = {
-                    "Signage Orchestrator Backend": {
-                        "error": str(serializer.errors)
-                    }
-                }
+    def post(self, request: Request, eventId: int) -> Response:
+        def actionCall(**kwargs):
+            return Event(id=kwargs.get("id")).linkToPlaylist(
+                kwargs["data"]["playlist"]["id"]
+            )
 
-                Log.log("User data incorrect: "+str(response))
-        except Exception as e:
-            data, httpStatus, headers = CustomControllerBase.exceptionHandler(e)
-            return Response(data, status=httpStatus, headers=headers)
-
-        return Response(response, status=httpStatus, headers={
-            "Cache-Control": "no-cache"
-        })
+        return self.link(request=request, actionCall=actionCall, objectId=eventId, serializer=EventPlaylistsSerializer)

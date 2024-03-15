@@ -77,7 +77,7 @@ By the way, Signage Orchestrator is designed with security in mind, but of cours
 
 ***Players connection***
 
-All configured players (Pis running Raspberry Slideshow or Raspberry Digital Signage) are enlisted in the Players table if configured.
+All configured players (Pis running Raspberry Slideshow or Raspberry Digital Signage) are enlisted in the Players table, if configured.
 In order to configure a player, SSH into it as root, then:
 
     cd /tmp
@@ -94,3 +94,25 @@ PLAYER_NAME, PLAYER_OPTIONAL_POSITION_NOTES, PLAYER_OPTIONAL_COMMENT are propert
 
 --check-tls: use "no" unless you have installed a valid certificate on the Orchestrator.
 
+***Players connection debug***
+
+After the procedure completes, if he player isn't enlisted in the Orchestrator Players tab, try launching the connection script manually (within the same malfunctioning player, of course as root):
+
+    sed -i 's|/tmp/orchestrator.response 2>/dev/null|/tmp/orchestrator.response|g' /usr/bin/player.sh
+    /usr/bin/player.sh
+
+On network error (if any), you could now see details.
+
+Also, you can see the Orchestrator response with:
+
+    cat /tmp/orchestrator.response | jq
+
+If something like:
+
+    {
+        "data": {
+           "orchestrator_ssh_public_key": "ecdsa-sha2-nistp256 ... root@orchestratorTest"
+        } 
+    }
+
+Is displayed, the communication is ok, so the player *is* correctly connected to the Orchestrator.

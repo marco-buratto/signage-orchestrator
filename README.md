@@ -96,14 +96,15 @@ PLAYER_NAME, PLAYER_OPTIONAL_POSITION_NOTES, PLAYER_OPTIONAL_COMMENT are propert
 
 ***Players connection debug***
 
-After the procedure completes, if he player isn't enlisted in the Orchestrator Players tab, try launching the connection script manually (within the same malfunctioning player, of course as root):
+After the procedure completes, the player should be enlisted in the Orchestrator Players tab.
+If not, there's an error somewhere: try launching the connection script manually (within the same malfunctioning player, of course as root):
 
     sed -i 's|/tmp/orchestrator.response 2>/dev/null|/tmp/orchestrator.response|g' /usr/bin/player.sh
     /usr/bin/player.sh
 
-On network error (if any), you could now see details.
+On network or any fatal error (if any), you could now see the details.
 
-Also, you can see the Orchestrator response with:
+If otherwise no error is displayed, you can see the Orchestrator response with:
 
     cat /tmp/orchestrator.response | jq
 
@@ -115,4 +116,4 @@ If something like:
         } 
     }
 
-Is displayed, the communication is ok, so the player *is* correctly connected to the Orchestrator.
+is displayed, the communication is ok, so the player *is* correctly connected to the Orchestrator. Re-check all the previous steps if the player is still not visible on the Orchestrator GUI.

@@ -131,4 +131,15 @@ Re-checking here all the necessary steps on the Orchestrator (with Slideshow pla
        url: https://www.binaryemotions.com/wp-content/uploads/2021/06/digital-signage.jpg
 3. in the Events tab, schedule an event: select a group of players on top left, insert an event into the timetable and add the playlist to it.
 
-Be sure that time and date on the Player are correct and the timezone corresponds to the Orchestrator one (the one selected during the Orchestrator installation). See again *Players connection* for details. 
+Be sure that time and date on the Player are correct and the timezone corresponds to the Orchestrator one (the one selected during the Orchestrator installation). See again *Players connection* for details.
+
+If all the previous steps have been followed correctly, everything should function as intended.
+For any other debug on the player, try having a look at the syslog:
+
+    apt install rsyslog
+    tail -f /var/log/syslog # see the output when you expect a player to change its state.
+
+Correct behaviour entries are:
+
+    raspberry-slideshow systemd[1]: Started player.service - Player service.
+    raspberry-slideshow systemd[1]: player.service: Deactivated successfully.

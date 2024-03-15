@@ -129,6 +129,6 @@ Re-checking here all the necessary steps on the Orchestrator (with Slideshow pla
 2. create a slideshow playlist, for example with just one media.conf directive inside:
 
        url: https://www.binaryemotions.com/wp-content/uploads/2021/06/digital-signage.jpg
-3. in the Events tab, schedule an event: select a group of players on top left, insert an event into the timetable and add the playlist to it;
+3. in the Events tab, schedule an event: select a group of players on top left, insert an event into the timetable and add the playlist to it.
 
 Be sure that time and date on the Player are correct and the timezone corresponds to the Orchestrator one (the one selected during the Orchestrator installation). See again *Players connection* for details. 

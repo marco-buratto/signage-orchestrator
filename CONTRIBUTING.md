@@ -112,3 +112,23 @@ Then connect each playerTest to the backend as a player:
     # Do the same for player2Test (changing player-name).
 
 You will now see that the two players populate the backend database and are shown in the Players tab of the UI.
+
+****BUILD****
+
+In order to create the installation .deb packages, a quick make-release script is provided within each vm.
+
+    # From the dev-setup folder.
+    vagrant ssh backend
+    sudo -i
+    cd /var/www/backend
+    bash DEBIAN-PKG/make-release.sh  --action deb
+
+Package file will be available in the /tmp directory, you can scp it to your development host or move it into the /vagrant folder; in this case the file will be available in the dev-setup folder.
+
+    # From the dev-setup folder.
+    vagrant ssh ui
+    sudo -i
+    cd /var/www/ui
+    bash DEBIAN-PKG/make-release.sh  --action deb
+
+Package file will be available in the /tmp directory.

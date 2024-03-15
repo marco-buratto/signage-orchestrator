@@ -84,7 +84,7 @@ In order to configure a player, SSH into it as root, then:
     wget --no-check-certificate https://ORCHESTRATOR_ADDRESS/raspberry-player/player-connector.sh
     # or wget https://ORCHESTRATOR_ADDRESS/raspberry-player/player-connector.sh with a valid certificate on the Orchestrator.
 
-    bash player-connector.sh --action install --player-type web|slideshow --orchestrator-address ORCHESTRATOR_ADDRESS --orchestrator-password ORCHESTRATOR_PASSWORD --player-name PLAYER_NAME --player-position PLAYER_OPTIONAL_POSITION_NOTES --player-comment PLAYER_OPTIONAL_COMMENT --check-tls yes|no
+    bash player-connector.sh --action install --player-type web|slideshow --orchestrator-address ORCHESTRATOR_ADDRESS --orchestrator-password "ORCHESTRATOR_PASSWORD" --player-name "PLAYER_NAME" --player-position "PLAYER_OPTIONAL_POSITION_NOTES" --player-comment "PLAYER_OPTIONAL_COMMENT" --check-tls yes|no
 
 --player-type: on Raspberry Slideshow players use "slideshow"; on Raspberry Digital Signage players use "web".
 

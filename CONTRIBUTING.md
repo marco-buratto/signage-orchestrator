@@ -64,7 +64,7 @@ In development, two Vagrant virtual machines are used, one for each node, backen
 
 Once nodes are created and running:
 
- 1. Browse to https://10.0.120.10/ to load the web GUI.
+ 1. Browse to http://10.0.120.10:5173 to load the web GUI.
             
  2. Signage Orchestrator is an "API-first" project. A Postman collection in saved in backend/backend/docs. Install Postman first, and import it.
 
@@ -91,3 +91,24 @@ Update database when schema changes:
 Restart the npm dev server after a modification, when it does not detect it automatically (ssh in the virtual machine as root, of course):
 
     systemctl restart npm 
+
+****A FIRST TEST****
+
+You can bring up player1Test and player2Test Vagrant nodes in order to have a first test of the platform without connecting real Raspberry Pi players:
+
+    # From the dev-setup folder.
+    vagrant up player1Test player2Test
+
+Then connect each playerTest to the backend as a player:
+
+    # From the dev-setup folder.
+    vagrant ssh player1Test
+
+    sudo -i
+    wget http://10.0.120.10:5173/raspberry-player/player-connector.sh
+    bash player-connector.sh --action install --player-type slideshow --orchestrator-address 10.0.120.100 --orchestrator-password "none" --player-name slideshow.one -check-tls no
+    sed -i 's|https://|http://|g' /usr/bin/player.sh; sed -i 's|/backend/api/v1/backend/|/api/v1/backend/|g' /usr/bin/player.sh
+
+    # Do the same for player2Test (changing player-name).
+
+You will now see that the two players populate the backend database and are shown in the Players tab of the UI.

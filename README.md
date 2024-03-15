@@ -61,7 +61,6 @@ Just a note, the following APT message you'll see at the end of the process is N
 
     N: Download is performed unsandboxed as root as file '/root/signage-orchestrator-backend_1.1-1_all.deb' couldn't be accessed by user '_apt'. - pkgAcquire::Run (13: Permission denied)
 
-
 ------------
 
 ***First access***
@@ -86,13 +85,18 @@ In order to configure a player, SSH into it as root, then:
 
     bash player-connector.sh --action install --player-type web|slideshow --orchestrator-address ORCHESTRATOR_ADDRESS --orchestrator-password "ORCHESTRATOR_PASSWORD" --player-name "PLAYER_NAME" --player-position "PLAYER_OPTIONAL_POSITION_NOTES" --player-comment "PLAYER_OPTIONAL_COMMENT" --check-tls yes|no
 
---player-type: on Raspberry Slideshow players use "slideshow"; on Raspberry Digital Signage players use "web".
+1. [x] *player-type*: on Raspberry Slideshow players use "slideshow"; on Raspberry Digital Signage players use "web".
+2. [x] *ORCHESTRATOR_ADDRESS* is the IP address or fqdn of your Signage Orchestrator installation and *ORCHESTRATOR_PASSWORD* is the password chosen when installing.
+3. [x] *PLAYER_NAME*, *PLAYER_OPTIONAL_POSITION_NOTES*, *PLAYER_OPTIONAL_COMMENT* are properties of the player (Raspberry unit) itself, so how it will be displayed in the Orchestrator interface.
+4. [x] *check-tls*: use "no" unless you have installed a valid certificate on the Orchestrator.
 
-ORCHESTRATOR_ADDRESS is the IP address or fqdn of your Signage Orchestrator installation and ORCHESTRATOR_PASSWORD is the password chosen when installing.
+Finally, configure the player time zone and be sure the time/date is correct (it must correspond to the Orchestrator one):
 
-PLAYER_NAME, PLAYER_OPTIONAL_POSITION_NOTES, PLAYER_OPTIONAL_COMMENT are properties of the player (Raspberry unit) itself, so how it will be displayed in the Orchestrator interface.
+    date
 
---check-tls: use "no" unless you have installed a valid certificate on the Orchestrator.
+If the time zone differs from the one selected for the Orchestrator, use the following command to fix:
+
+    dpkg-reconfigure tzdata
 
 ***Players connection debug***
 
@@ -117,3 +121,14 @@ If something like:
     }
 
 is displayed, the communication is ok, so the player *is* correctly connected to the Orchestrator. Re-check all the previous steps if the player is still not visible on the Orchestrator GUI.
+
+***Connection ok, but nothing happens on the player***
+
+Re-checking here all the necessary steps on the Orchestrator (with Slideshow player types as example).
+1. the Player must be in a group;
+2. create a slideshow playlist, for example with just one media.conf directive inside:
+
+       url: https://www.binaryemotions.com/wp-content/uploads/2021/06/digital-signage.jpg
+3. in the Events tab, schedule an event: select a group of players on top left, insert an event into the timetable and add the playlist to it;
+
+Be sure that time and date on the Player are correct and the timezone corresponds to the Orchestrator one (the one selected during the Orchestrator installation). See again *Players connection* for details. 

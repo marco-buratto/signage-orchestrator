@@ -13,6 +13,7 @@ if [ "$1" == "configure" ]; then
     if [ -z $configBasic ]; then
         db_beginblock
             db_input critical signage-orchestrator-backend/admin-password
+            db_input high signage-orchestrator-backend/admin-password-note
         db_endblock
     fi
 

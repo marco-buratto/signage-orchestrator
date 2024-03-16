@@ -80,6 +80,8 @@ By the way, Signage Orchestrator is designed with security in mind, but of cours
 All configured players (Pis running Raspberry Slideshow or Raspberry Digital Signage) are enlisted in the Players table, if configured.
 In order to configure a player, SSH into it as root, then:
 
+    apt install -y curl wget
+
     cd /tmp
     wget --no-check-certificate https://ORCHESTRATOR_ADDRESS/raspberry-player/player-connector.sh
     # or wget https://ORCHESTRATOR_ADDRESS/raspberry-player/player-connector.sh with a valid certificate on the Orchestrator.

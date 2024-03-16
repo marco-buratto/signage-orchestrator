@@ -44,7 +44,7 @@ Once installed the operating system, SSH in as root, then give the following com
     apt update
 
     cd /root
-    wget https://github.com/marco-buratto/signage-orchestrator/releases/download/v1.2/signage-orchestrator-backend_1.2-1_all.deb
+    wget https://github.com/marco-buratto/signage-orchestrator/releases/download/v1.2/signage-orchestrator-backend_1.2-2_all.deb
     wget https://github.com/marco-buratto/signage-orchestrator/releases/download/v1.2/signage-orchestrator-ui_1.2-1_all.deb
 
     apt install -y /root/signage-orchestrator-*.deb

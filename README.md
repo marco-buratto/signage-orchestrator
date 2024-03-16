@@ -49,7 +49,8 @@ Once installed the operating system, SSH in as root, then give the following com
 
     apt install -y /root/signage-orchestrator-*.deb
 
-During the installation, debconf will ask you to set the timezone according to yours and to create a password for the admin user of Signage Orchestrator, in order to be able to login and connect players. The following images are shown as an example:
+During the installation, debconf will ask you to set the timezone according to yours and to create a password for the admin user of Signage Orchestrator (use *ONLY ALPHANUMERIC* characters), in order to be able to login and connect players.
+The following images are shown as an example:
 
 ![Installation1](docs/installation/install.1.png)
 ![Installation2](docs/installation/install.2.png)

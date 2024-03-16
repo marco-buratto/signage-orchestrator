@@ -1,4 +1,4 @@
 Template: signage-orchestrator-backend/admin-password
 Type: password
-Description: Set a password for the admin user for the Signage Orchestrator interface (use alphanumeric characters).
+Description: Set a password for the admin user for the Signage Orchestrator interface (use ONLY ALPHANUMERIC characters).
   Apache basic auth password

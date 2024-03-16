@@ -48,9 +48,9 @@ if [ "$1" == "configure" ]; then
     # Apache basic auth.
     db_get signage-orchestrator-backend/admin-password
     if [ -n "$RET" ]; then
-        echo "$(echo $RET | sed 's/\$/\\$/g')" | htpasswd -i /etc/apache2/basic.auth admin # apache basic auth (some escapes).
+        echo "$(echo $RET | sed 's/\$/\\$/g')" | sed 's/[^a-zA-Z0-9]//g' | htpasswd -i /etc/apache2/basic.auth admin # apache basic auth (some escapes).
 
-        echo "$(echo $RET | sed 's/\$/\\$/g')" > /etc/orchestrator.password # used for cron service.
+        echo "$(echo $RET | sed 's/\$/\\$/g')" | sed 's/[^a-zA-Z0-9]//g' > /etc/orchestrator.password # used for cron service.
         chmod 400 /etc/orchestrator.password
     fi
 

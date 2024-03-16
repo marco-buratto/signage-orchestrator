@@ -90,14 +90,6 @@ In order to configure a player, SSH into it as root, then:
 3. [x] *PLAYER_NAME*, *PLAYER_OPTIONAL_POSITION_NOTES*, *PLAYER_OPTIONAL_COMMENT* are properties of the player (Raspberry unit) itself, so how it will be displayed in the Orchestrator interface.
 4. [x] *check-tls*: use "no" unless you have installed a valid certificate on the Orchestrator.
 
-Finally, configure the player time zone and be sure the time/date is correct (it must correspond to the Orchestrator one):
-
-    date
-
-If the time zone differs from the one selected for the Orchestrator, use the following command to fix:
-
-    dpkg-reconfigure tzdata
-
 ***Players connection debug***
 
 After the procedure completes, the player should be enlisted in the Orchestrator Players tab.
@@ -131,8 +123,6 @@ Re-checking here all the necessary steps on the Orchestrator (with Slideshow pla
        url: https://www.binaryemotions.com/wp-content/uploads/2021/06/digital-signage.jpg
 3. in the Events tab, schedule an event: select a group of players on top left, insert an event into the timetable and add the playlist to it.
 
-Be sure that time and date on the Player are correct and the timezone corresponds to the Orchestrator one (the one selected during the Orchestrator installation). See again *Players connection* for details.
-
 If all the previous steps have been followed correctly, everything should function as intended.
 For any other debug on the player, try having a look at the syslog:
 
@@ -143,3 +133,20 @@ Correct behaviour entries are:
 
     raspberry-slideshow systemd[1]: Started player.service - Player service.
     raspberry-slideshow systemd[1]: player.service: Deactivated successfully.
+
+***Debugging the Orchestrator***
+
+Orchestrator-side, we can see if, how and when the server communicates with the players with:
+
+    # SSH in as root.
+    tail -f /var/log/syslog
+
+A normal output looks like:
+
+    DJANGO_API - ________________________________________________________________________________
+    DJANGO_API - List of Event
+    DJANGO_API - ________________________________________________________________________________
+    DJANGO_API - --> Response: <Response status_code=200, "application/json">
+    APACHE_ACCESS_API: 2024-03-15 22:30:00.165 api:80 127.0.0.1 - admin "-" "GET /api/v1/backend/events/?loadGroup=true&loadPlaylist=true&start_date=2024-03-15%2022%3A30 HTTP/1.1" 200 1338 "-" "curl/7.88.1"
+    systemd[1]: orchestrator.service: Deactivated successfully.
+    root: Processing 192.168.0.118: configuring and starting Raspberry Slideshow...

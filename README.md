@@ -93,4 +93,6 @@ In order to configure a player, SSH into it as root, then:
 3. [x] *PLAYER_NAME*, *PLAYER_OPTIONAL_POSITION_NOTES*, *PLAYER_OPTIONAL_COMMENT* are properties of the player (Raspberry unit) itself, so how it will be displayed in the Orchestrator interface.
 4. [x] *check-tls*: use "no" unless you have installed a valid certificate on the Orchestrator.
 
+Now you can schedule your first event on the Orchestrator GUI: if for example it's 10:07, schedule an event for 10:10 and then relax seeing your players show the playlist content :)
+
 If you experience problems, please see the DEBUG docs.

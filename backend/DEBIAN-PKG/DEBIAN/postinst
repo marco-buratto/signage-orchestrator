@@ -12,8 +12,8 @@ if [ "$1" == "configure" ]; then
     configBasic=$(cat /etc/apache2/basic.auth | awk -F: '{print $2}')
     if [ -z $configBasic ]; then
         db_beginblock
-            db_input critical signage-orchestrator-backend/admin-password
-            db_input high signage-orchestrator-backend/admin-password-note
+            db_input critical signage-orchestrator-backend/admin-password || true
+            db_input high signage-orchestrator-backend/admin-password-note || true
         db_endblock
     fi
 
